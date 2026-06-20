@@ -647,7 +647,29 @@ app.get("/admin/reports", requireAdmin, async (req, res) => {
     reports: reports.rows
   });
 });
-  
+
+app.post("/report/thread/:id", postLimiter, async (req, res) => {
+  const reason = cleanText(req.body.reason, 300);
+
+  await pool.query(
+    "INSERT INTO reports (type, target_id, reason) VALUES ($1, $2, $3)",
+    ["thread", req.params.id, reason]
+  );
+
+  res.redirect(req.get("Referer") || "/");
+});
+
+app.post("/report/reply/:id", postLimiter, async (req, res) => {
+  const reason = cleanText(req.body.reason, 300);
+
+  await pool.query(
+    "INSERT INTO reports (type, target_id, reason) VALUES ($1, $2, $3)",
+    ["reply", req.params.id, reason]
+  );
+
+  res.redirect(req.get("Referer") || "/");
+});
+
 app.get("/:board", async (req, res) => {
   const boards = await getAllBoards();
 
