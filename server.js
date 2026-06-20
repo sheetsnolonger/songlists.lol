@@ -279,6 +279,7 @@ async function initDb() {
 
     ALTER TABLE replies
     ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'user';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
   `);
 
   await pool.query(`
@@ -396,8 +397,6 @@ app.post("/signup", postLimiter, async (req, res) => {
       "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
       [username, hash]
     );
-
-    role TEXT DEFAULT 'user',
 
     req.session.user = { username };
     res.redirect("/");
