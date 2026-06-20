@@ -426,17 +426,26 @@ app.get("/settings/profile", requireLogin, (req, res) => {
   });
 });
 
-app.post("/settings/profile", postLimiter, requireLogin, async (req, res) => {
+app.post("/settings/profile", postLimiter, requireLogin, upload.single("avatar"), async (req, res) => {
   const bio = cleanText(req.body.bio, 500);
-  const avatarUrl = cleanText(req.body.avatar_url, 300);
 
-  await pool.query(
-    "UPDATE users SET bio = $1, avatar_url = $2 WHERE username = $3",
-    [bio, avatarUrl, req.session.user.username]
-  );
+  let avatarUrl = null;
 
-  req.session.user.bio = bio;
-  req.session.user.avatar_url = avatarUrl;
+  if (req.file) {
+    avatarUrl = "/uploads/" + req.file.filename;
+  }
+
+  if (avatarUrl) {
+    await pool.query(
+      "UPDATE users SET bio = $1, avatar_url = $2 WHERE username = $3",
+      [bio, avatarUrl, req.session.user.username]
+    );
+  } else {
+    await pool.query(
+      "UPDATE users SET bio = $1 WHERE username = $2",
+      [bio, req.session.user.username]
+    );
+  }
 
   res.redirect("/u/" + req.session.user.username);
 });
