@@ -745,18 +745,6 @@ if (!thread.rows.length) {
 }
 
 
-  const replies = await pool.query(
-    "SELECT * FROM replies WHERE thread_id = $1 ORDER BY id ASC",
-    [req.params.id]
-  );
-
-  res.render("thread", {
-    boards,
-    board: req.params.board,
-    thread: thread.rows[0],
-    replies: replies.rows
-  });
-});
 
 app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async (req, res) => {
   const thread = await pool.query(
