@@ -340,3 +340,103 @@ button:hover {
   background: #d6daf0;
   padding: 6px;
 }
+
+/* profile page */
+
+.profile-box {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 12px;
+  border: 1px solid #b7c5d9;
+  background: #f7f7f7;
+}
+
+.profile-avatar {
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+  border: 1px solid #999;
+  background: #fff;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.profile-box h1 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  color: #117743;
+}
+
+.profile-bio {
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* profile settings */
+
+.settings-box,
+.post-form {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 12px;
+  border: 1px solid #b7c5d9;
+  background: #f7f7f7;
+}
+
+.post-form input,
+.post-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  padding: 6px;
+  border: 1px solid #999;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
+
+.post-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.post-form button {
+  border: 1px solid #999;
+  background: #e6e6e6;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.post-form button:hover {
+  background: #dcdcdc;
+}
+
+/* profile links */
+
+.post-meta a,
+.profile-box a {
+  color: #117743;
+  text-decoration: none;
+}
+
+.post-meta a:hover,
+.profile-box a:hover {
+  text-decoration: underline;
+}
+
+/* mobile */
+
+.mobile-mode .profile-box,
+.mobile-mode .settings-box,
+.mobile-mode .post-form {
+  max-width: 100%;
+  margin: 10px;
+}
+
+.mobile-mode .profile-avatar {
+  width: 96px;
+  height: 96px;
+}
