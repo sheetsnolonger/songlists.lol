@@ -439,9 +439,16 @@ app.get("/u/:username", async (req, res) => {
 
 app.get("/settings/profile", requireLogin, async (req, res) => {
   const result = await pool.query(
-    "SELECT * FROM users WHERE username = $1",
+    `SELECT id, username, bio, avatar_url, custom_css, created_at
+     FROM users
+     WHERE username = $1`,
     [req.session.user.username]
   );
+
+  if (!result.rows.length) {
+    req.session.user = null;
+    return res.redirect("/login");
+  }
 
   res.render("profile-settings", {
     user: result.rows[0],
@@ -449,24 +456,43 @@ app.get("/settings/profile", requireLogin, async (req, res) => {
   });
 });
 
-app.post("/settings/profile", postLimiter, requireLogin, upload.single("avatar"), async (req, res) => {
-  const bio = cleanText(req.body.bio, 500);
-  const customCss = req.body.custom_css || "";
+app.post(
+  "/settings/profile",
+  postLimiter,
+  requireLogin,
+  upload.single("avatar"),
+  async (req, res) => {
+    const bio = cleanText(req.body.bio, 500);
+    const customCss = cleanText(req.body.custom_css, 3000);
 
-await pool.query(
-  `UPDATE users
-   SET bio = $1,
-       avatar_url = $2,
-       custom_css = $3
-   WHERE username = $4`,
-  [
-    bio,
-    avatarUrl,
-    customCss,
-    req.session.user.username
-  ]
+    let avatarUrl = null;
+
+    if (req.file) {
+      avatarUrl = "/uploads/" + req.file.filename;
+    }
+
+    if (avatarUrl) {
+      await pool.query(
+        `UPDATE users
+         SET bio = $1,
+             avatar_url = $2,
+             custom_css = $3
+         WHERE username = $4`,
+        [bio, avatarUrl, customCss, req.session.user.username]
+      );
+    } else {
+      await pool.query(
+        `UPDATE users
+         SET bio = $1,
+             custom_css = $2
+         WHERE username = $3`,
+        [bio, customCss, req.session.user.username]
+      );
+    }
+
+    res.redirect("/u/" + req.session.user.username);
+  }
 );
-
 app.get("/boards", (req, res) => {
   res.redirect("/");
 });
