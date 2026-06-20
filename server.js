@@ -648,6 +648,34 @@ app.get("/admin/reports", requireAdmin, async (req, res) => {
   });
 });
 
+app.get("/:board", async (req, res) => {
+  const boards = await getAllBoards();
+
+  const board = await pool.query(
+    "SELECT * FROM boards WHERE slug = $1",
+    [req.params.board]
+  );
+
+  if (!board.rows.length) {
+    return res.status(404).render("404", { boards });
+  }
+
+  const threads = await pool.query(`
+    SELECT threads.*, COUNT(replies.id) AS reply_count
+    FROM threads
+    LEFT JOIN replies ON replies.thread_id = threads.id
+    WHERE threads.board_slug = $1
+    GROUP BY threads.id
+    ORDER BY pinned DESC, id DESC
+  `, [req.params.board]);
+
+  res.render("board", {
+    boards,
+    board: board.rows[0],
+    threads: threads.rows
+  });
+});
+
 app.get("/:board/thread/:id", async (req, res) => {
   const boards = await getAllBoards();
 
