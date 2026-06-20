@@ -14,11 +14,21 @@
   <form method="POST" action="/logout" style="display:inline;">
     <button class="inline-btn">logout</button>
   </form>
+<% if (user) { %>
+
+  [ <a href="/u/<%= user.username %>">profile</a> ]
+  [ <a href="/settings/profile">profile settings</a> ]
+
+  <form method="POST" action="/logout" style="display:inline;">
+    <button class="inline-btn">logout</button>
+  </form>
+
 <% } else { %>
+
   [ <a href="/login">login</a> ]
   [ <a href="/signup">signup</a> ]
+
 <% } %>
-  <br>
 
   <% boards.forEach(b => { %>
     <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
