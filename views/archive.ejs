@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>archive - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/catalog">catalog</a> ]
+  <br>
+
+  <% boards.forEach(b => { %>
+    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
+  <% }) %>
+</div>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>archive</h1>
+  <p>older threads</p>
+</div>
+
+<% threads.forEach(thread => { %>
+  <div class="post">
+    <div class="post-title">
+      <a href="/<%= thread.board_slug %>/thread/<%= thread.id %>"><%= thread.title %></a>
+    </div>
+
+    <div class="post-meta">
+      /<%= thread.board_slug %>/ |
+      by <%= thread.author %> |
+      <%= new Date(thread.created_at).toLocaleString() %>
+    </div>
+  </div>
+<% }) %>
+
+</body>
+</html>
