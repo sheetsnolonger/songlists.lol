@@ -530,11 +530,18 @@ app.get("/secret-admin", requireAdmin, async (req, res) => {
     LIMIT 100
   `);
 
-  res.render("admin", {
-    boards,
-    threads: threads.rows,
-    replies: replies.rows
-  });
+  const users = await pool.query(`
+    SELECT id, username, created_at
+    FROM users
+    ORDER BY id DESC
+`);
+  
+res.render("admin", {
+  boards,
+  threads: threads.rows,
+  replies: replies.rows,
+  reports: reports.rows,
+  users: users.rows
 });
 
 app.post("/admin/thread/:id/delete", requireAdmin, postLimiter, async (req, res) => {
@@ -557,6 +564,11 @@ app.post("/admin/reply/:id/delete", requireAdmin, postLimiter, async (req, res) 
   res.redirect("/secret-admin");
 });
 
+app.post("/admin/user/:id/delete", requireAdmin, postLimiter, async (req, res) => {
+  await pool.query("DELETE FROM users WHERE id = $1", [req.params.id]);
+  res.redirect("/secret-admin");
+});
+  
 app.get("/:board", async (req, res) => {
   const boards = await getAllBoards();
 
