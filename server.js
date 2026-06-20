@@ -434,10 +434,13 @@ app.post("/login", postLimiter, async (req, res) => {
     return res.render("login", { error: "wrong username or password" });
   }
 
-  req.session.user = {
-  username: user.username,
-  role: user.role
+  const loggedInUser = result.rows[0];
+
+req.session.user = {
+  username: loggedInUser.username,
+  role: loggedInUser.role || "user"
 };
+  
   res.redirect("/");
 });
 
