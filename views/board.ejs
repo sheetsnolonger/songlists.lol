@@ -26,10 +26,15 @@
 
 <div class="post-form">
   <h2>new thread</h2>
-  <form method="POST" action="/<%= board.slug %>/thread">
+
+  <form method="POST" action="/<%= board.slug %>/thread" enctype="multipart/form-data">
     <input name="author" placeholder="name (optional)">
     <input name="title" placeholder="thread title" required>
-    <textarea name="body" placeholder="post body" required></textarea>
+
+    <textarea name="body" placeholder="post body"></textarea>
+
+    <input type="file" name="media" accept="image/*,audio/*">
+
     <button>post</button>
   </form>
 </div>
@@ -41,19 +46,44 @@
 <% } %>
 
 <% threads.forEach(thread => { %>
-  <div class="post">
+  <div class="post" id="t<%= thread.id %>">
+
     <div class="post-title">
-      <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
-      <a href="/<%= board.slug %>/thread/<%= thread.id %>"><%= thread.title %></a>
+      <% if (thread.pinned) { %>
+        <span class="pinned">[pinned]</span>
+      <% } %>
+
+      <a href="/<%= board.slug %>/thread/<%= thread.id %>">
+        <%= thread.title %>
+      </a>
     </div>
 
     <div class="post-meta">
-      <b><%= thread.author %></b> |
-      replies: <%= thread.reply_count %> |
+      <b><%= thread.author %></b>
+      |
+      no.<%= thread.id %>
+      |
+      replies: <%= thread.reply_count %>
+      |
       <%= new Date(thread.created_at).toLocaleString() %>
     </div>
 
-    <div class="post-body"><%= thread.body %></div>
+    <div class="post-body">
+      <%- formatBody(thread.body) %>
+    </div>
+
+    <% if (thread.media_url) { %>
+      <div class="media">
+        <% if (thread.media_type && thread.media_type.startsWith("image/")) { %>
+          <a href="<%= thread.media_url %>" target="_blank">
+            <img src="<%= thread.media_url %>">
+          </a>
+        <% } else if (thread.media_type && thread.media_type.startsWith("audio/")) { %>
+          <audio controls src="<%= thread.media_url %>"></audio>
+        <% } %>
+      </div>
+    <% } %>
+
   </div>
 <% }) %>
 
