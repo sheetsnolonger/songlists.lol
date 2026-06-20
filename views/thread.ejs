@@ -10,6 +10,7 @@
   [ <a href="/">home</a> ]
   [ <a href="/<%= board %>">/<%= board %>/</a> ]
   [ <a href="/catalog">catalog</a> ]
+  [ <a href="/archive">archive</a> ]
   <br>
 
   <% boards.forEach(b => { %>
@@ -22,18 +23,40 @@
   <h1>/<a href="/<%= board %>"><%= board %></a>/</h1>
 </div>
 
-<div class="post op">
+<div class="post op" id="t<%= thread.id %>">
+
   <div class="post-title">
-    <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
+    <% if (thread.pinned) { %>
+      <span class="pinned">[pinned]</span>
+    <% } %>
+
     <%= thread.title %>
   </div>
 
   <div class="post-meta">
-    <b><%= thread.author %></b> |
+    <b><%= thread.author %></b>
+    |
+    no.<%= thread.id %>
+    |
     <%= new Date(thread.created_at).toLocaleString() %>
   </div>
 
-  <div class="post-body"><%= thread.body %></div>
+  <div class="post-body">
+    <%- formatBody(thread.body) %>
+  </div>
+
+  <% if (thread.media_url) { %>
+    <div class="media">
+      <% if (thread.media_type && thread.media_type.startsWith("image/")) { %>
+        <a href="<%= thread.media_url %>" target="_blank">
+          <img src="<%= thread.media_url %>">
+        </a>
+      <% } else if (thread.media_type && thread.media_type.startsWith("audio/")) { %>
+        <audio controls src="<%= thread.media_url %>"></audio>
+      <% } %>
+    </div>
+  <% } %>
+
 </div>
 
 <h2 class="section-title">replies</h2>
@@ -43,21 +66,45 @@
 <% } %>
 
 <% replies.forEach(reply => { %>
-  <div class="post">
+  <div class="post" id="p<%= reply.id %>">
+
     <div class="post-meta">
-      <b><%= reply.author %></b> |
+      <b><%= reply.author %></b>
+      |
+      no.<%= reply.id %>
+      |
       <%= new Date(reply.created_at).toLocaleString() %>
     </div>
 
-    <div class="post-body"><%= reply.body %></div>
+    <div class="post-body">
+      <%- formatBody(reply.body) %>
+    </div>
+
+    <% if (reply.media_url) { %>
+      <div class="media">
+        <% if (reply.media_type && reply.media_type.startsWith("image/")) { %>
+          <a href="<%= reply.media_url %>" target="_blank">
+            <img src="<%= reply.media_url %>">
+          </a>
+        <% } else if (reply.media_type && reply.media_type.startsWith("audio/")) { %>
+          <audio controls src="<%= reply.media_url %>"></audio>
+        <% } %>
+      </div>
+    <% } %>
+
   </div>
 <% }) %>
 
 <div class="post-form">
   <h2>reply</h2>
-  <form method="POST" action="/<%= board %>/thread/<%= thread.id %>/reply">
+
+  <form method="POST" action="/<%= board %>/thread/<%= thread.id %>/reply" enctype="multipart/form-data">
     <input name="author" placeholder="name (optional)">
-    <textarea name="body" placeholder="reply" required></textarea>
+
+    <textarea name="body" placeholder="reply"></textarea>
+
+    <input type="file" name="media" accept="image/*,audio/*">
+
     <button>reply</button>
   </form>
 </div>
