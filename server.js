@@ -726,7 +726,9 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
   res.redirect(`/${req.params.board}`);
 });
 
-app.get("/:board/thread/:id", async (req, res) => {
+if (!thread.rows.length) {
+  return res.status(404).render("404");
+}
   const boards = await getAllBoards();
 
   const thread = await pool.query(
