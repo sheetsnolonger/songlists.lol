@@ -457,19 +457,13 @@ app.get("/u/:username", async (req, res) => {
   return res.status(404).render("404");
 }
   
-  const user = await pool.query(
-  `SELECT
-    id,
-    username,
-    bio,
-    avatar_url,
-    custom_css,
-    created_at
+const profile = await pool.query(
+  `SELECT username, bio, avatar_url, custom_css, role, created_at
    FROM users
    WHERE username = $1`,
-  [username]
+  [req.params.username]
 );
-
+  
   if (!user.rows.length) return res.status(404).render("404");
 
   const threads = await pool.query(
