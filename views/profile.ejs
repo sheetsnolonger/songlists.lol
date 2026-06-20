@@ -15,23 +15,31 @@
 <div class="top-nav">
   [ <a href="/">home</a> ]
   [ <a href="/catalog">catalog</a> ]
-<% if (user) { %>
-
-  [ <a href="/u/<%= user.username %>">profile</a> ]
-  [ <a href="/settings/profile">profile settings</a> ]
-
-  <form method="POST" action="/logout" style="display:inline;">
-    <button class="inline-btn">logout</button>
-  </form>
-
-<% } else { %>
-
-  [ <a href="/login">login</a> ]
-  [ <a href="/signup">signup</a> ]
-
-<% } %>
+  [ <a href="/archive">archive</a> ]
 </div>
 
+<div class="user-nav">
+  <% if (user) { %>
+    [ <a href="/u/<%= user.username %>">profile</a> ]
+    [ <a href="/settings/profile">profile settings</a> ]
+    <form method="POST" action="/logout" style="display:inline;">
+      <button class="inline-btn">logout</button>
+    </form>
+  <% } else { %>
+    [ <a href="/login">login</a> ]
+    [ <a href="/signup">signup</a> ]
+  <% } %>
+</div>
+
+<div class="board-nav">
+  <% if (typeof boards !== "undefined") { %>
+    <% boards.forEach(board => { %>
+      <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">
+        /<%= board.slug %>/
+      </a>
+    <% }) %>
+  <% } %>
+</div>
 <div class="profile-box">
   <% if (profile.avatar_url) { %>
     <img class="profile-avatar" src="<%= profile.avatar_url %>">
