@@ -801,27 +801,12 @@ const mediaType = req.file ? req.file.mimetype : null;
     return res.send("title and post body or file required");
   }
 
-  await pool.query(
-    `INSERT INTO threads (
-      board_slug,
-      title,
-      body,
-      author,
-      author_role,
-      media_url,
-      media_type
-)
-     VALUES ($1, $2, $3, $4, $5, $6)`,
-    [
-  req.params.board,
-  title,
-  body,
-  author,
-  authorRole,
-  mediaUrl,
-  mediaType
-]
-  );
+await pool.query(
+  `INSERT INTO threads
+   (board_slug, title, body, author, author_role, media_url, media_type)
+   VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+  [req.params.board, title, body, author, authorRole, mediaUrl, mediaType]
+);
 
   res.redirect(`/${req.params.board}`);
 });
@@ -853,11 +838,11 @@ const author =
   if (!body && !mediaUrl) return res.send("reply or file required");
 
   await pool.query(
-    `INSERT INTO replies (thread_id, body, author, media_url, media_type)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [req.params.id, body, author, mediaUrl, mediaType]
-  );
-
+  `INSERT INTO replies
+   (thread_id, body, author, author_role, media_url, media_type)
+   VALUES ($1, $2, $3, $4, $5, $6)`,
+  [req.params.id, body, author, authorRole, mediaUrl, mediaType]
+);
   res.redirect(`/${req.params.board}/thread/${req.params.id}`);
 });
 
