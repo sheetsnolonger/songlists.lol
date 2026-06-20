@@ -297,5 +297,28 @@ button:hover {
 
   .top-nav {
     font-size: 11px;
+
+.greentext {
+  color: #789922;
+}
+
+.quote-link {
+  color: #d00;
+  font-weight: bold;
+}
+
+.media {
+  margin-top: 8px;
+}
+
+.media img {
+  max-width: 220px;
+  max-height: 220px;
+  border: 1px solid #999;
+}
+
+.media audio {
+  width: 260px;
+}
   }
 }
