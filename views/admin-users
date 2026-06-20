@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>admin users</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/secret-admin">admin home</a> ]
+  [ <a href="/">site home</a> ]
+</div>
+
+<h1 class="section-title">users</h1>
+
+<% users.forEach(user => { %>
+  <div class="post">
+    <div class="post-title">
+      <a href="/u/<%= user.username %>"><%= user.username %></a>
+    </div>
+
+    <div class="post-meta">
+      joined <%= new Date(user.created_at).toLocaleString() %>
+    </div>
+
+    <form method="POST" action="/admin/user/<%= user.id %>/delete">
+      <button>delete user</button>
+    </form>
+  </div>
+<% }) %>
+
+</body>
+</html>
