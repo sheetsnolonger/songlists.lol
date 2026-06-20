@@ -150,6 +150,11 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
+
 function cleanText(text, maxLength) {
   return String(text || "").trim().slice(0, maxLength);
 }
