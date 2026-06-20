@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= profile.username %> - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/catalog">catalog</a> ]
+</div>
+
+<div class="profile-box">
+  <% if (profile.avatar_url) { %>
+    <img class="profile-avatar" src="<%= profile.avatar_url %>">
+  <% } %>
+
+  <h1><%= profile.username %></h1>
+  <p>joined <%= new Date(profile.created_at).toLocaleString() %></p>
+
+  <div class="profile-bio">
+    <%= profile.bio || "no bio yet." %>
+  </div>
+</div>
+
+<h2 class="section-title">threads</h2>
+
+<% threads.forEach(thread => { %>
+  <div class="post">
+    <a href="/<%= thread.board_slug %>/thread/<%= thread.id %>">
+      <%= thread.title %>
+    </a>
+    <div class="post-meta">/<%= thread.board_slug %>/</div>
+  </div>
+<% }) %>
+
+<h2 class="section-title">replies</h2>
+
+<% replies.forEach(reply => { %>
+  <div class="post">
+    <div class="post-body"><%- formatBody(reply.body) %></div>
+    <div class="post-meta">reply no.<%= reply.id %></div>
+  </div>
+<% }) %>
+
+</body>
+</html>
