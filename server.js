@@ -79,7 +79,7 @@ app.use(express.static("public"));
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "https://files.catbox.moe", "data:"],
       mediaSrc: ["'self'"],
       styleSrc: ["'self'"],
