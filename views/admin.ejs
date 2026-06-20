@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>secret admin - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/catalog">catalog</a> ]
+
+  <form method="POST" action="/admin-logout" style="display:inline;">
+    <button class="inline-btn">logout</button>
+  </form>
+
+  <br>
+
+  <% boards.forEach(b => { %>
+    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
+  <% }) %>
+</div>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>secret admin</h1>
+</div>
+
+<h2 class="section-title">threads</h2>
+
+<% threads.forEach(thread => { %>
+  <div class="post">
+    <div class="post-title">
+      <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
+      <a href="/<%= thread.board_slug %>/thread/<%= thread.id %>"><%= thread.title %></a>
+    </div>
+
+    <div class="post-meta">
+      /<%= thread.board_slug %>/ |
+      by <%= thread.author %> |
+      replies: <%= thread.reply_count %>
+    </div>
+
+    <div class="post-body"><%= thread.body %></div>
+
+    <% if (thread.pinned) { %>
+      <form method="POST" action="/admin/thread/<%= thread.id %>/unpin">
+        <button>unpin</button>
+      </form>
+    <% } else { %>
+      <form method="POST" action="/admin/thread/<%= thread.id %>/pin">
+        <button>pin</button>
+      </form>
+    <% } %>
+
+    <form method="POST" action="/admin/thread/<%= thread.id %>/delete">
+      <button>delete thread</button>
+    </form>
+  </div>
+<% }) %>
+
+<h2 class="section-title">recent replies</h2>
+
+<% replies.forEach(reply => { %>
+  <div class="post">
+    <div class="post-meta">
+      reply to
+      <a href="/<%= reply.board_slug %>/thread/<%= reply.thread_id %>">
+        <%= reply.thread_title %>
+      </a>
+      by <%= reply.author %>
+    </div>
+
+    <div class="post-body"><%= reply.body %></div>
+
+    <form method="POST" action="/admin/reply/<%= reply.id %>/delete">
+      <button>delete reply</button>
+    </form>
+  </div>
+<% }) %>
+
+</body>
+</html>
