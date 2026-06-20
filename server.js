@@ -673,8 +673,19 @@ app.get("/:board/thread/:id", async (req, res) => {
   });
 });
 
+app.post("/report/thread/:id", postLimiter, async (req, res) => {
+  const reason = cleanText(req.body.reason, 300) || "no reason given";
+
+  await pool.query(
+    "INSERT INTO reports (type, target_id, reason) VALUES ($1, $2, $3)",
+    ["thread", req.params.id, reason]
+  );
+
+  res.redirect(req.get("Referer") || "/");
+});
+
 app.post("/report/reply/:id", postLimiter, async (req, res) => {
-  const reason = cleanText(req.body.reason, 300);
+  const reason = cleanText(req.body.reason, 300) || "no reason given";
 
   await pool.query(
     "INSERT INTO reports (type, target_id, reason) VALUES ($1, $2, $3)",
@@ -682,34 +693,6 @@ app.post("/report/reply/:id", postLimiter, async (req, res) => {
   );
 
   res.redirect(req.get("Referer") || "/");
-});
-
-app.get("/:board", async (req, res) => {
-  const boards = await getAllBoards();
-
-  const board = await pool.query(
-    "SELECT * FROM boards WHERE slug = $1",
-    [req.params.board]
-  );
-
-  if (!board.rows.length) {
-  return res.status(404).send("board not found");
-}
-
-  const threads = await pool.query(`
-    SELECT threads.*, COUNT(replies.id) AS reply_count
-    FROM threads
-    LEFT JOIN replies ON replies.thread_id = threads.id
-    WHERE threads.board_slug = $1
-    GROUP BY threads.id
-    ORDER BY pinned DESC, id DESC
-  `, [req.params.board]);
-
-  res.render("board", {
-    boards,
-    board: board.rows[0],
-    threads: threads.rows
-  });
 });
 
 app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res) => {
