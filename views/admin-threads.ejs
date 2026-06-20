@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>admin threads</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/secret-admin">admin home</a> ]
+  [ <a href="/">site home</a> ]
+</div>
+
+<h1 class="section-title">threads</h1>
+
+<% threads.forEach(thread => { %>
+  <div class="post">
+    <div class="post-title">
+      <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
+      <a href="/<%= thread.board_slug %>/thread/<%= thread.id %>"><%= thread.title %></a>
+    </div>
+
+    <div class="post-meta">
+      /<%= thread.board_slug %>/ |
+      by <%= thread.author %> |
+      replies: <%= thread.reply_count %>
+    </div>
+
+    <div class="post-body"><%= thread.body %></div>
+
+    <% if (thread.pinned) { %>
+      <form method="POST" action="/admin/thread/<%= thread.id %>/unpin">
+        <button>unpin</button>
+      </form>
+    <% } else { %>
+      <form method="POST" action="/admin/thread/<%= thread.id %>/pin">
+        <button>pin</button>
+      </form>
+    <% } %>
+
+    <form method="POST" action="/admin/thread/<%= thread.id %>/delete">
+      <button>delete thread</button>
+    </form>
+  </div>
+<% }) %>
+
+</body>
+</html>
