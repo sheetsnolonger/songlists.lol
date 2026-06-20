@@ -740,10 +740,6 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
   res.redirect(`/${req.params.board}`);
 });
 
-if (!thread.rows.length) {
-  return res.status(404).render("404");
-}
-
 
 
 app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async (req, res) => {
