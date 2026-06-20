@@ -498,8 +498,8 @@ app.use((err, req, res, next) => {
   console.error("upload/server error:", err);
 
   if (err.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).send("file too large. max is 15mb.");
-  }
+    return res.status(400).send("file too large. max is 100mb.");
+}
 
   if (err.message === "only images and audio allowed") {
     return res.status(400).send("only images and audio allowed.");
