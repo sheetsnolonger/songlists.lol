@@ -12,18 +12,25 @@
   [ <a href="/archive">archive</a> ]
 </div>
 
+<%
+const gifs = [
+  "/images/404.gif"
+];
+
+const gif = gifs[Math.floor(Math.random() * gifs.length)];
+%>
+
 <div class="error-page">
   <h1>404</h1>
   <p>page not found...</p>
 
-  <img
-    class="error-gif"
-    src="https://media.tenor.com/vGB_5JfFhk4AAAAi/crying-behind-the-mask.gif"
-    alt="sob sob"
-  >
+  <img class="error-gif" src="<%= gif %>" alt="404 anime gif">
+
+  <p>this board/thread does not exist or was deleted.</p>
 
   <p>
-    <a href="/">go back home</a>
+    [ <a href="/">return home</a> ]
+    [ <a href="/catalog">catalog</a> ]
   </p>
 </div>
 
