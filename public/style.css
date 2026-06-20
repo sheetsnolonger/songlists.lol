@@ -3,23 +3,41 @@
 }
 
 html {
+  min-height: 100%;
   background: #000;
 }
 
 body {
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.88)),
-    url("/images/blood-bg.jpg");
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center top;
-  background-repeat: repeat;
   color: #ff0000;
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
   text-transform: lowercase;
+  background: #000;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.88)),
+    url("/images/blood-bg.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
 }
 
 body,
@@ -61,9 +79,7 @@ a:hover {
   color: #ff0000;
   line-height: 1.8;
   padding: 6px 8px;
-  position: relative;
   text-align: center;
-  z-index: 2;
 }
 
 .top-nav a {
@@ -72,9 +88,7 @@ a:hover {
 
 .header {
   padding: 14px 8px 10px;
-  position: relative;
   text-align: center;
-  z-index: 2;
 }
 
 .header h1 {
@@ -82,7 +96,6 @@ a:hover {
   font-size: 42px;
   letter-spacing: 2px;
   margin: 4px 0;
-  text-transform: lowercase;
 }
 
 .header p {
@@ -92,9 +105,9 @@ a:hover {
 
 .mascot {
   background: transparent;
-  border: none;
-  box-shadow: none;
-  outline: none;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
   height: auto;
   margin-bottom: 5px;
   width: 58px;
@@ -118,17 +131,13 @@ a:hover {
   margin: 10px auto;
   max-width: 900px;
   padding: 8px;
-  position: relative;
   text-align: center;
-  z-index: 2;
 }
 
 .board-wrap {
   margin: 0 auto;
   max-width: 900px;
   padding: 0 8px;
-  position: relative;
-  z-index: 2;
 }
 
 .board-category {
@@ -180,8 +189,6 @@ a:hover {
   margin: 7px auto;
   max-width: 900px;
   padding: 8px;
-  position: relative;
-  z-index: 2;
 }
 
 .op {
@@ -213,8 +220,6 @@ a:hover {
   margin: 10px auto;
   max-width: 700px;
   padding: 8px;
-  position: relative;
-  z-index: 2;
 }
 
 input,
@@ -277,6 +282,20 @@ button:hover {
   font-weight: bold;
 }
 
+.report-form {
+  margin-top: 8px;
+  border-top: 1px solid #330000;
+  padding-top: 6px;
+}
+
+.report-form input {
+  max-width: 300px;
+}
+
+.report-form button {
+  font-size: 11px;
+}
+
 .media {
   margin-top: 8px;
 }
@@ -295,8 +314,6 @@ button:hover {
   margin: 12px auto;
   max-width: 700px;
   padding: 10px;
-  position: relative;
-  z-index: 2;
 }
 
 .profile-box h1 {
@@ -333,23 +350,17 @@ button:hover {
   margin: 12px auto;
   max-width: 700px;
   padding: 10px;
-  position: relative;
-  z-index: 2;
 }
 
 .footer {
   color: #770000;
   padding: 20px;
-  position: relative;
   text-align: center;
-  z-index: 2;
 }
 
 .error-page {
   margin-top: 50px;
-  position: relative;
   text-align: center;
-  z-index: 2;
 }
 
 .error-page h1 {
@@ -410,10 +421,79 @@ button:hover {
   color: #ff2222;
 }
 
+.mobile-mode {
+  font-size: 17px !important;
+}
+
+.mobile-mode .top-nav {
+  font-size: 15px !important;
+  line-height: 2 !important;
+}
+
+.mobile-mode .top-nav a,
+.mobile-mode .top-nav form,
+.mobile-mode .top-nav button {
+  display: inline-block !important;
+  margin: 3px !important;
+}
+
+.mobile-mode .header h1 {
+  font-size: 26px !important;
+}
+
+.mobile-mode .mascot {
+  width: 44px !important;
+}
+
+.mobile-mode .board-wrap,
+.mobile-mode .post,
+.mobile-mode .post-form,
+.mobile-mode .notice,
+.mobile-mode .profile-box,
+.mobile-mode .settings-box,
+.mobile-mode .recent-thread,
+.mobile-mode .board-category {
+  max-width: none !important;
+  width: auto !important;
+  margin-left: 6px !important;
+  margin-right: 6px !important;
+}
+
+.mobile-mode .board-entry em {
+  display: block !important;
+  float: none !important;
+  margin-top: 3px !important;
+}
+
+.mobile-mode .media img,
+.mobile-mode .error-gif {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.mobile-mode .media audio {
+  width: 100% !important;
+}
+
+.mobile-mode input,
+.mobile-mode textarea,
+.mobile-mode select,
+.mobile-mode button {
+  font-size: 16px !important;
+}
+
+.mobile-mode textarea {
+  min-height: 120px !important;
+}
+
 @media (max-width: 700px) {
   body {
-    background-attachment: scroll;
     font-size: 15px;
+  }
+
+  body::before {
+    background-position: center center;
+    background-size: cover;
   }
 
   .top-nav {
@@ -440,7 +520,8 @@ button:hover {
   .notice,
   .profile-box,
   .settings-box,
-  .recent-thread {
+  .recent-thread,
+  .board-category {
     margin-left: 6px;
     margin-right: 6px;
     max-width: none;
