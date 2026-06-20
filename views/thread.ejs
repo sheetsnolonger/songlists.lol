@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= thread.title %> - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
 
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/<%= board %>">/<%= board %>/</a> ]
+  [ <a href="/catalog">catalog</a> ]
+  <br>
+
+  <% boards.forEach(b => { %>
+    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
+  <% }) %>
+</div>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>/<a href="/<%= board %>"><%= board %></a>/</h1>
+</div>
+
+<div class="post op">
+  <div class="post-title">
+    <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
+    <%= thread.title %>
+  </div>
+
+  <div class="post-meta">
+    <b><%= thread.author %></b> |
+    <%= new Date(thread.created_at).toLocaleString() %>
+  </div>
+
+  <div class="post-body"><%= thread.body %></div>
+</div>
+
+<h2 class="section-title">replies</h2>
+
+<% if (replies.length === 0) { %>
+  <div class="post">no replies yet.</div>
+<% } %>
+
+<% replies.forEach(reply => { %>
+  <div class="post">
+    <div class="post-meta">
+      <b><%= reply.author %></b> |
+      <%= new Date(reply.created_at).toLocaleString() %>
+    </div>
+
+    <div class="post-body"><%= reply.body %></div>
+  </div>
+<% }) %>
+
+<div class="post-form">
+  <h2>reply</h2>
+  <form method="POST" action="/<%= board %>/thread/<%= thread.id %>/reply">
+    <input name="author" placeholder="name (optional)">
+    <textarea name="body" placeholder="reply" required></textarea>
+    <button>reply</button>
+  </form>
+</div>
+
+</body>
+</html>
