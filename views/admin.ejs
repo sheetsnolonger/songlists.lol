@@ -79,5 +79,23 @@
   </div>
 <% }) %>
 
+<h2 class="section-title">users</h2>
+
+<% users.forEach(user => { %>
+  <div class="post">
+    <div class="post-title">
+      <a href="/u/<%= user.username %>"><%= user.username %></a>
+    </div>
+
+    <div class="post-meta">
+      joined <%= new Date(user.created_at).toLocaleString() %>
+    </div>
+
+    <form method="POST" action="/admin/user/<%= user.id %>/delete">
+      <button>delete user</button>
+    </form>
+  </div>
+<% }) %>
+
 </body>
 </html>
