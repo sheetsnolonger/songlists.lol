@@ -49,11 +49,10 @@
   </div>
 
   <div class="post-meta">
-    <b>
-  <% if (reply.author !== "anon") { %>
+<% if (thread.author !== "anon") { %>
   <b>
-    <a href="/u/<%= reply.author %>">
-      <%= reply.author %>
+    <a href="/u/<%= thread.author %>">
+      <%= thread.author %>
     </a>
   </b>
 <% } else { %>
@@ -93,15 +92,23 @@
   <div class="post" id="p<%= reply.id %>">
 
     <div class="post-meta">
-      <% if (reply.author !== "anon") { %>
-        <b>
-          <a href="/u/<%= reply.author %>">
-            <%= reply.author %>
-          </a>
-        </b>
-      <% } else { %>
-        <b>anon</b>
-      <% } %>
+<% replies.forEach(reply => { %>
+
+  <div class="post">
+
+    <% if (reply.author !== "anon") { %>
+      <b>
+        <a href="/u/<%= reply.author %>">
+          <%= reply.author %>
+        </a>
+      </b>
+    <% } else { %>
+      <b>anon</b>
+    <% } %>
+
+  </div>
+
+<% }) %>
 
       |
       no.<%= reply.id %>
