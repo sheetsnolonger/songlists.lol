@@ -9,6 +9,15 @@
 <div class="top-nav">
   [ <a href="/">home</a> ]
   [ <a href="/catalog">catalog</a> ]
+<% if (user) { %>
+  [ logged in as <b><%= user.username %></b> ]
+  <form method="POST" action="/logout" style="display:inline;">
+    <button class="inline-btn">logout</button>
+  </form>
+<% } else { %>
+  [ <a href="/login">login</a> ]
+  [ <a href="/signup">signup</a> ]
+<% } %>
   <br>
 
   <% boards.forEach(b => { %>
