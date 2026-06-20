@@ -451,28 +451,21 @@ app.get("/settings/profile", requireLogin, async (req, res) => {
 
 app.post("/settings/profile", postLimiter, requireLogin, upload.single("avatar"), async (req, res) => {
   const bio = cleanText(req.body.bio, 500);
-  const customCss = cleanText(req.body.custom_css, 3000);
+  const customCss = req.body.custom_css || "";
 
-  let avatarUrl = null;
-
-  if (req.file) {
-    avatarUrl = "/uploads/" + req.file.filename;
-  }
-
-  if (avatarUrl) {
-    await pool.query(
-      "UPDATE users SET bio = $1, avatar_url = $2, custom_css = $3 WHERE username = $4",
-      [bio, avatarUrl, customCss, req.session.user.username]
-    );
-  } else {
-    await pool.query(
-      "UPDATE users SET bio = $1, custom_css = $2 WHERE username = $3",
-      [bio, customCss, req.session.user.username]
-    );
-  }
-
-  res.redirect("/u/" + req.session.user.username);
-});
+await pool.query(
+  `UPDATE users
+   SET bio = $1,
+       avatar_url = $2,
+       custom_css = $3
+   WHERE username = $4`,
+  [
+    bio,
+    avatarUrl,
+    customCss,
+    req.session.user.username
+  ]
+);
 
 app.get("/boards", (req, res) => {
   res.redirect("/");
