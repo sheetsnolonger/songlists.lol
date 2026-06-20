@@ -124,6 +124,22 @@ app.use(session({
   }
 }));
 
+function requireAdmin(req, res, next) {
+  if (!req.session.admin) {
+    return res.redirect("/admin-login");
+  }
+
+  next();
+}
+
+function requireLogin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  next();
+}
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
