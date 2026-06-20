@@ -406,9 +406,17 @@ app.get("/u/:username", async (req, res) => {
 }
   
   const user = await pool.query(
-    "SELECT id, username, bio, avatar_url, custom_css, created_at FROM users WHERE username = $1",
-    [username]
-  );
+  `SELECT
+    id,
+    username,
+    bio,
+    avatar_url,
+    custom_css,
+    created_at
+   FROM users
+   WHERE username = $1`,
+  [username]
+);
 
   if (!user.rows.length) return res.status(404).render("404");
 
