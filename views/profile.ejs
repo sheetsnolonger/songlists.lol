@@ -40,7 +40,10 @@
     <img class="profile-avatar" src="<%= profile.avatar_url %>">
   <% } %>
 
-  <h1><%= profile.username %></h1>
+  <h1>
+  <%= profile.username %>
+  <%- userBadge(profile.role) %>
+</h1>
   <p>joined <%= new Date(profile.created_at).toLocaleString() %></p>
 
   <div class="profile-bio">
