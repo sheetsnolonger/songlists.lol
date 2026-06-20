@@ -68,7 +68,11 @@
     </div>
 
     <div class="post-meta">
-      <b><%= thread.author %></b>
+      <b>
+  <a href="/u/<%= thread.author %>">
+    <%= thread.author %>
+  </a>
+</b>
       |
       no.<%= thread.id %>
       |
