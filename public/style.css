@@ -18,17 +18,14 @@ body {
   background: #000;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.88)),
-    url("/public/images/blood-bg.jpg");
+body {
+  background-image:
+    linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.85)),
+    url("/images/blood-bg.jpg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 body::after {
