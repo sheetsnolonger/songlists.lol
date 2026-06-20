@@ -3,6 +3,9 @@ const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const { Pool } = require("pg");
 
 const app = express();
@@ -23,6 +26,49 @@ const pool = new Pool({
   ssl: true
 });
 
+const uploadDir = path.join(__dirname, "public", "uploads");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: uploadDir,
+  filename: (req, file, cb) => {
+    const safeName =
+      Date.now() +
+      "-" +
+      file.originalname.replace(/[^a-z0-9._-]/gi, "_");
+
+    cb(null, safeName);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 15 * 1024 * 1024
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "audio/mpeg",
+      "audio/wav",
+      "audio/ogg",
+      "audio/mp4"
+    ];
+
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error("only images and audio allowed"));
+    }
+
+    cb(null, true);
+  }
+});
+
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 
@@ -33,7 +79,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "https://files.catbox.moe"],
+      imgSrc: ["'self'", "https://files.catbox.moe", "data:"],
+      mediaSrc: ["'self'"],
       styleSrc: ["'self'"],
       scriptSrc: ["'self'"],
       formAction: ["'self'"],
@@ -81,6 +128,39 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+function cleanText(text, maxLength) {
+  return String(text || "").trim().slice(0, maxLength);
+}
+
+function escapeHtml(text) {
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatBody(text) {
+  const escaped = escapeHtml(text);
+
+  return escaped
+    .split("\n")
+    .map(line => {
+      if (line.startsWith("&gt;") && !line.startsWith("&gt;&gt;")) {
+        return `<span class="greentext">${line}</span>`;
+      }
+
+      return line.replace(
+        /&gt;&gt;(\d+)/g,
+        `<a class="quote-link" href="#p$1">&gt;&gt;$1</a>`
+      );
+    })
+    .join("<br>");
+}
+
+app.locals.formatBody = formatBody;
+
 async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS boards (
@@ -97,18 +177,27 @@ async function initDb() {
       body TEXT NOT NULL,
       author TEXT DEFAULT 'anon',
       pinned BOOLEAN DEFAULT false,
+      media_url TEXT,
+      media_type TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS replies (
       id SERIAL PRIMARY KEY,
       thread_id INTEGER REFERENCES threads(id) ON DELETE CASCADE,
-      body TEXT NOT NULL,
+      body TEXT,
       author TEXT DEFAULT 'anon',
+      media_url TEXT,
+      media_type TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT false;
+    ALTER TABLE threads ADD COLUMN IF NOT EXISTS media_url TEXT;
+    ALTER TABLE threads ADD COLUMN IF NOT EXISTS media_type TEXT;
+
+    ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_url TEXT;
+    ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_type TEXT;
   `);
 
   const boards = [
@@ -168,10 +257,6 @@ async function initDb() {
   }
 }
 
-function cleanText(text, maxLength) {
-  return String(text || "").trim().slice(0, maxLength);
-}
-
 async function getAllBoards() {
   const result = await pool.query(`
     SELECT boards.*, COUNT(threads.id) AS thread_count
@@ -183,8 +268,6 @@ async function getAllBoards() {
 
   return result.rows;
 }
-
-/* pages */
 
 app.get("/", async (req, res) => {
   const boards = await getAllBoards();
@@ -239,8 +322,6 @@ app.get("/archive", async (req, res) => {
     threads: threads.rows
   });
 });
-
-/* admin */
 
 app.get("/admin-login", (req, res) => {
   res.render("admin-login", { error: null });
@@ -311,8 +392,6 @@ app.post("/admin/reply/:id/delete", requireAdmin, postLimiter, async (req, res) 
   res.redirect("/secret-admin");
 });
 
-/* board */
-
 app.get("/:board", async (req, res) => {
   const boards = await getAllBoards();
 
@@ -339,7 +418,7 @@ app.get("/:board", async (req, res) => {
   });
 });
 
-app.post("/:board/thread", postLimiter, async (req, res) => {
+app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res) => {
   const board = await pool.query(
     "SELECT * FROM boards WHERE slug = $1",
     [req.params.board]
@@ -351,12 +430,17 @@ app.post("/:board/thread", postLimiter, async (req, res) => {
   const body = cleanText(req.body.body, 5000);
   const author = cleanText(req.body.author, 40) || "anon";
 
-  if (!title || !body) return res.send("title and body required");
+  const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
+  const mediaType = req.file ? req.file.mimetype : null;
+
+  if (!title || (!body && !mediaUrl)) {
+    return res.send("title and post body or file required");
+  }
 
   await pool.query(
-    `INSERT INTO threads (board_slug, title, body, author)
-     VALUES ($1, $2, $3, $4)`,
-    [req.params.board, title, body, author]
+    `INSERT INTO threads (board_slug, title, body, author, media_url, media_type)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
+    [req.params.board, title, body, author, mediaUrl, mediaType]
   );
 
   res.redirect(`/${req.params.board}`);
@@ -385,7 +469,7 @@ app.get("/:board/thread/:id", async (req, res) => {
   });
 });
 
-app.post("/:board/thread/:id/reply", postLimiter, async (req, res) => {
+app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async (req, res) => {
   const thread = await pool.query(
     "SELECT * FROM threads WHERE id = $1 AND board_slug = $2",
     [req.params.id, req.params.board]
@@ -396,23 +480,33 @@ app.post("/:board/thread/:id/reply", postLimiter, async (req, res) => {
   const body = cleanText(req.body.body, 5000);
   const author = cleanText(req.body.author, 40) || "anon";
 
-  if (!body) return res.send("reply required");
+  const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
+  const mediaType = req.file ? req.file.mimetype : null;
+
+  if (!body && !mediaUrl) return res.send("reply or file required");
 
   await pool.query(
-    "INSERT INTO replies (thread_id, body, author) VALUES ($1, $2, $3)",
-    [req.params.id, body, author]
+    `INSERT INTO replies (thread_id, body, author, media_url, media_type)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [req.params.id, body, author, mediaUrl, mediaType]
   );
 
   res.redirect(`/${req.params.board}/thread/${req.params.id}`);
 });
 
-/* 404 */
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  if (err.message === "only images and audio allowed") {
+    return res.status(400).send("only images and audio allowed");
+  }
+
+  res.status(500).send("server error");
+});
 
 app.use((req, res) => {
   res.status(404).send("page not found");
 });
-
-/* start */
 
 initDb()
   .then(() => {
