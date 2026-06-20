@@ -38,9 +38,9 @@
       </form>
     <% } %>
 
-    <form method="POST" action="/admin/thread/<%= thread.id %>/delete">
-      <button>delete thread</button>
-    </form>
+<form method="POST" action="/admin/thread/<%= thread.id %>/delete" onsubmit="return confirm('delete this thread? this cannot be undone.');">
+  <button>delete thread</button>
+</form>
   </div>
 <% }) %>
 
