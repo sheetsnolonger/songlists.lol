@@ -581,3 +581,20 @@ button:hover {
   color: #ff9900;
   border-color: #ff9900;
 }
+
+.profile-box h1 .badge {
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.admin-badge {
+  color: #ff4444;
+  border: 1px solid #ff4444;
+  padding: 1px 5px;
+}
+
+.mod-badge {
+  color: #ff9900;
+  border: 1px solid #ff9900;
+  padding: 1px 5px;
+}
