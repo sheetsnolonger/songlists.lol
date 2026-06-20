@@ -47,10 +47,9 @@
   <div class="post-meta">
 <% if (thread.author !== "anon") { %>
   <b>
-    <a href="/u/<%= thread.author %>">
-      <%= thread.author %>
-    </a>
+    <a href="/u/<%= thread.author %>"><%= thread.author %></a>
   </b>
+  <%- userBadge(thread.author_role) %>
 <% } else { %>
   <b>anon</b>
 <% } %>
@@ -99,15 +98,13 @@
   <div class="post">
 
     <% if (reply.author !== "anon") { %>
-      <b>
-        <a href="/u/<%= reply.author %>">
-          <%= reply.author %>
-        </a>
-      </b>
-    <% } else { %>
-      <b>anon</b>
-    <% } %>
-
+  <b>
+    <a href="/u/<%= reply.author %>"><%= reply.author %></a>
+  </b>
+  <%- userBadge(reply.author_role) %>
+<% } else { %>
+  <b>anon</b>
+<% } %>
   </div>
 
 <% }) %>
