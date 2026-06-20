@@ -464,8 +464,8 @@ const profile = await pool.query(
   [req.params.username]
 );
   
-  if (!user.rows.length) return res.status(404).render("404");
-
+  if (!profile.rows.length) return res.status(404).render("404");
+  
   const threads = await pool.query(
     "SELECT * FROM threads WHERE author = $1 ORDER BY id DESC LIMIT 50",
     [username]
@@ -477,7 +477,7 @@ const profile = await pool.query(
   );
 
   res.render("profile", {
-    profile: user.rows[0],
+    profile: profile.rows[0],
     threads: threads.rows,
     replies: replies.rows
   });
