@@ -11,9 +11,7 @@
   [ <a href="/">home</a> ]
   [ <a href="/catalog">catalog</a> ]
   [ <a href="/archive">archive</a> ]
-</div>
 
-<div class="user-nav">
   <% if (user) { %>
     [ <a href="/u/<%= user.username %>">profile</a> ]
     [ <a href="/settings/profile">profile settings</a> ]
@@ -24,9 +22,12 @@
   <% } %>
 </div>
 
-<div class="header">
-  <img src="https://files.catbox.moe/kxbylk.png" class="mascot">
-  <h1>/<a href="/<%= board %>"><%= board %></a>/</h1>
+<div class="board-nav">
+  <% if (typeof boards !== "undefined") { %>
+    <% boards.forEach(board => { %>
+      <a href="/<%= board.slug %>">/<%= board.slug %>/</a>
+    <% }) %>
+  <% } %>
 </div>
 
 <div class="post op" id="t<%= thread.id %>">
