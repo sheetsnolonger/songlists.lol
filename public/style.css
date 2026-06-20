@@ -1,6 +1,6 @@
 body {
-  background: #eef2ff;
-  color: #000;
+  background: #000;
+  color: #cc0000;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
   margin: 0;
@@ -8,59 +8,60 @@ body {
 }
 
 a {
-  color: #34345c;
+  color: #ff3333;
   text-decoration: none;
   font-weight: bold;
 }
 
 a:hover {
-  color: #d00;
+  color: #ff6666;
   text-decoration: underline;
 }
 
 .top-nav {
-  background: #d6daf0;
-  border-bottom: 1px solid #b7c5d9;
-  padding: 3px 6px;
+  background: #080000;
+  border-bottom: 1px solid #660000;
+  padding: 5px 8px;
   font-size: 12px;
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .top-nav a {
-  margin-right: 5px;
+  margin-right: 6px;
 }
 
 .header {
   text-align: center;
-  padding: 8px;
+  padding: 10px;
 }
 
 .header h1 {
-  color: #af0a0f;
+  color: #ff3333;
   font-size: 28px;
   margin: 4px 0;
 }
 
 .header p {
+  color: #cc0000;
   margin: 2px 0;
-  font-size: 13px;
 }
 
 .mascot {
   width: 56px;
   height: auto;
-  border: 1px solid #999;
+  border: 1px solid #660000;
   margin-bottom: 4px;
 }
 
 .notice {
-  background: #d6daf0;
-  border: 1px solid #b7c5d9;
+  background: #080000;
+  border: 1px solid #660000;
   max-width: 900px;
   margin: 8px auto;
-  padding: 5px;
+  padding: 6px;
   text-align: center;
+  color: #ff3333;
 }
 
 .board-wrap {
@@ -70,137 +71,130 @@ a:hover {
 }
 
 .board-category {
-  background: #d6daf0;
-  border: 1px solid #b7c5d9;
+  background: #080000;
+  border: 1px solid #660000;
   margin: 8px auto;
 }
 
 .board-category h2 {
-  background: #98aabf;
-  color: #000;
+  background: #220000;
+  color: #ff3333;
   margin: 0;
-  padding: 3px 6px;
+  padding: 4px 6px;
   font-size: 14px;
-  font-weight: bold;
 }
 
 .board-entry {
-  padding: 3px 6px;
-  border-top: 1px solid #c6cbe0;
+  padding: 4px 6px;
+  border-top: 1px solid #330000;
 }
 
 .board-entry span {
   font-weight: bold;
-  color: #000;
+  color: #ff3333;
 }
 
 .board-entry small {
-  color: #333;
+  color: #aa0000;
 }
 
 .board-entry em {
-  color: #555;
+  color: #880000;
   font-style: normal;
   float: right;
 }
 
 .section-title {
-  color: #af0a0f;
+  color: #ff3333;
   text-align: center;
   font-size: 20px;
   margin: 14px 0 6px;
 }
 
-.recent-thread {
-  background: #d6daf0;
-  border: 1px solid #b7c5d9;
+.recent-thread,
+.post,
+.post-form,
+.profile-box,
+.settings-box {
+  background: #080000;
+  border: 1px solid #660000;
+  color: #cc0000;
   max-width: 900px;
-  margin: 4px auto;
-  padding: 5px;
-}
-
-.recent-thread span,
-.recent-thread small {
-  color: #555;
-  margin-left: 6px;
-}
-
-.post {
-  background: #d6daf0;
-  border: 1px solid #b7c5d9;
-  max-width: 900px;
-  margin: 5px auto;
-  padding: 6px;
+  margin: 6px auto;
+  padding: 8px;
 }
 
 .op {
-  background: #d6daf0;
+  background: #100000;
 }
 
 .post-title {
-  color: #0f0c5d;
+  color: #ff3333;
   font-size: 15px;
   font-weight: bold;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .post-meta {
-  color: #555;
+  color: #990000;
   font-size: 11px;
   margin-bottom: 6px;
 }
 
 .post-body {
+  color: #cc0000;
   white-space: pre-wrap;
   line-height: 1.35;
 }
 
 .post-form {
-  background: #d6daf0;
-  border: 1px solid #b7c5d9;
   max-width: 700px;
-  margin: 8px auto;
-  padding: 8px;
 }
 
 .post-form h2 {
-  background: #98aabf;
-  color: #000;
+  background: #220000;
+  color: #ff3333;
   font-size: 14px;
   margin: -8px -8px 8px -8px;
   padding: 4px 6px;
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #999;
-  background: #fff;
-  color: #000;
+  background: #000;
+  color: #ff3333;
+  border: 1px solid #660000;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
-  padding: 4px;
-  margin-bottom: 5px;
+  padding: 5px;
+  margin-bottom: 6px;
 }
 
 textarea {
-  min-height: 100px;
+  min-height: 110px;
   resize: vertical;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: #770000;
+}
+
 button {
-  border: 1px solid #999;
-  background: #eee;
-  color: #000;
+  background: #100000;
+  color: #ff3333;
+  border: 1px solid #660000;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 12px;
-  padding: 3px 9px;
+  padding: 4px 10px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #ddd;
+  background: #330000;
 }
 
 .inline-btn {
@@ -211,74 +205,188 @@ button:hover {
 }
 
 .pinned {
-  color: #d00;
+  color: #ff0000;
   font-weight: bold;
   margin-right: 4px;
 }
 
 .footer {
   text-align: center;
-  color: #555;
+  color: #770000;
   padding: 18px;
 }
 
-.quote {
+.greentext {
   color: #789922;
 }
 
-/* genre colors */
+.quote-link {
+  color: #ff5555;
+  font-weight: bold;
+}
 
-.genre-mu { color:#0000aa; }
+.media {
+  margin-top: 8px;
+}
 
-.genre-rok { color:#cc0000; }
-.genre-met { color:#555555; }
-.genre-pnk { color:#ff6600; }
-.genre-emo { color:#ff0088; }
-.genre-shg { color:#9966ff; }
-.genre-grg { color:#884400; }
-.genre-gth { color:#660066; }
+.media img {
+  max-width: 220px;
+  max-height: 220px;
+  border: 1px solid #660000;
+}
 
-.genre-hip { color:#009900; }
-.genre-rnb { color:#00aa44; }
+.media audio {
+  width: 260px;
+}
 
-.genre-pop { color:#ff66cc; }
-.genre-kpop { color:#ff3399; }
-.genre-jpop { color:#ff6699; }
+.profile-box h1 {
+  color: #ff3333;
+  margin: 0 0 8px 0;
+}
 
-.genre-elec { color:#0066ff; }
-.genre-idm { color:#6666ff; }
-.genre-dnb { color:#ff0066; }
-.genre-dub { color:#ff3300; }
-.genre-tec { color:#00bbbb; }
-.genre-hou { color:#00cc99; }
-.genre-tra { color:#00aaff; }
-.genre-hxc { color:#990000; }
-.genre-brc { color:#9900ff; }
-.genre-amb { color:#6666cc; }
-.genre-vap { color:#ff99ff; }
+.profile-avatar {
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+  border: 1px solid #660000;
+  background: #000;
+  display: block;
+  margin: 0 auto 10px auto;
+}
 
-.genre-jaz { color:#cc9900; }
-.genre-blu { color:#4444ff; }
-.genre-fol { color:#996633; }
-.genre-cty { color:#aa7700; }
-.genre-cls { color:#4444aa; }
+.profile-bio {
+  background: #000;
+  border: 1px solid #330000;
+  color: #cc0000;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 
-.genre-ind { color:#666666; }
-.genre-noi { color:#000000; }
-.genre-exp { color:#990099; }
+.profile-preview {
+  text-align: center;
+  margin: 8px 0;
+}
 
-.genre-ost { color:#ff5500; }
-.genre-wld { color:#009966; }
-.genre-lat { color:#ff3300; }
-.genre-reg { color:#00aa00; }
+.error-page {
+  text-align: center;
+  margin-top: 50px;
+}
 
-.genre-vin { color:#884400; }
-.genre-gear { color:#333333; }
-.genre-prod { color:#0066cc; }
+.error-page h1 {
+  color: #ff3333;
+  font-size: 64px;
+  margin: 0;
+}
 
-.genre-shr { color:#0099ff; }
-.genre-rec { color:#ff8800; }
-.genre-cht { color:#cc5500; }
+.error-gif {
+  max-width: 260px;
+  border: 1px solid #660000;
+  background: #080000;
+  padding: 6px;
+}
+
+#mobile-toggle {
+  margin-left: 8px;
+  width: auto;
+  display: inline;
+  padding: 2px 6px;
+}
+
+.mobile-mode {
+  font-size: 16px;
+}
+
+.mobile-mode .top-nav {
+  font-size: 15px;
+  line-height: 2;
+}
+
+.mobile-mode .board-wrap,
+.mobile-mode .post,
+.mobile-mode .post-form,
+.mobile-mode .notice,
+.mobile-mode .recent-thread,
+.mobile-mode .profile-box,
+.mobile-mode .settings-box {
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  border-left: none;
+  border-right: none;
+}
+
+.mobile-mode .media img {
+  max-width: 100%;
+  height: auto;
+}
+
+.mobile-mode .media audio {
+  width: 100%;
+}
+
+.mobile-mode .mascot {
+  width: 42px;
+}
+
+.mobile-mode input,
+.mobile-mode textarea,
+.mobile-mode button {
+  font-size: 16px;
+}
+
+.mobile-mode .board-entry em {
+  float: none;
+  display: block;
+  margin-top: 2px;
+}
+
+/* genre colors adjusted for black/red theme */
+
+.genre-mu,
+.genre-rok,
+.genre-met,
+.genre-pnk,
+.genre-emo,
+.genre-shg,
+.genre-grg,
+.genre-gth,
+.genre-hip,
+.genre-rnb,
+.genre-pop,
+.genre-kpop,
+.genre-jpop,
+.genre-elec,
+.genre-idm,
+.genre-dnb,
+.genre-dub,
+.genre-tec,
+.genre-hou,
+.genre-tra,
+.genre-hxc,
+.genre-brc,
+.genre-amb,
+.genre-vap,
+.genre-jaz,
+.genre-blu,
+.genre-fol,
+.genre-cty,
+.genre-cls,
+.genre-ind,
+.genre-noi,
+.genre-exp,
+.genre-ost,
+.genre-wld,
+.genre-lat,
+.genre-reg,
+.genre-vin,
+.genre-gear,
+.genre-prod,
+.genre-shr,
+.genre-rec,
+.genre-cht {
+  color: #ff3333;
+}
 
 @media (max-width: 700px) {
   .board-entry em {
@@ -297,146 +405,14 @@ button:hover {
 
   .top-nav {
     font-size: 11px;
-
-.greentext {
-  color: #789922;
-}
-
-.quote-link {
-  color: #d00;
-  font-weight: bold;
-}
-
-.media {
-  margin-top: 8px;
-}
-
-.media img {
-  max-width: 220px;
-  max-height: 220px;
-  border: 1px solid #999;
-}
-
-.media audio {
-  width: 260px;
-}
   }
-}
 
-.error-page {
-  text-align: center;
-  margin-top: 60px;
-}
+  .media img {
+    max-width: 100%;
+    height: auto;
+  }
 
-.error-page h1 {
-  color: #af0a0f;
-  font-size: 64px;
-  margin: 0;
-}
-
-.error-gif {
-  max-width: 260px;
-  border: 1px solid #b7c5d9;
-  background: #d6daf0;
-  padding: 6px;
-}
-
-/* profile page */
-
-.profile-box {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 12px;
-  border: 1px solid #b7c5d9;
-  background: #f7f7f7;
-}
-
-.profile-avatar {
-  width: 128px;
-  height: 128px;
-  object-fit: cover;
-  border: 1px solid #999;
-  background: #fff;
-  display: block;
-  margin-bottom: 10px;
-}
-
-.profile-box h1 {
-  margin: 0 0 8px 0;
-  font-size: 22px;
-  color: #117743;
-}
-
-.profile-bio {
-  margin-top: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  background: #fff;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* profile settings */
-
-.settings-box,
-.post-form {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 12px;
-  border: 1px solid #b7c5d9;
-  background: #f7f7f7;
-}
-
-.post-form input,
-.post-form textarea {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 8px;
-  padding: 6px;
-  border: 1px solid #999;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-}
-
-.post-form textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.post-form button {
-  border: 1px solid #999;
-  background: #e6e6e6;
-  padding: 4px 10px;
-  cursor: pointer;
-}
-
-.post-form button:hover {
-  background: #dcdcdc;
-}
-
-/* profile links */
-
-.post-meta a,
-.profile-box a {
-  color: #117743;
-  text-decoration: none;
-}
-
-.post-meta a:hover,
-.profile-box a:hover {
-  text-decoration: underline;
-}
-
-/* mobile */
-
-.mobile-mode .profile-box,
-.mobile-mode .settings-box,
-.mobile-mode .post-form {
-  max-width: 100%;
-  margin: 10px;
-}
-
-.mobile-mode .profile-avatar {
-  width: 96px;
-  height: 96px;
+  .media audio {
+    width: 100%;
+  }
 }
