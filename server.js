@@ -150,6 +150,11 @@ function escapeHtml(text) {
 function formatBody(text) {
   const escaped = escapeHtml(text);
 
+  function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect("/login");
+  next();
+}
+  
   return escaped
     .split("\n")
     .map(line => {
@@ -174,6 +179,15 @@ async function initDb() {
       slug TEXT UNIQUE NOT NULL,
       name TEXT NOT NULL,
       description TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      bio TEXT DEFAULT '',
+      avatar_url TEXT DEFAULT '',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS threads (
@@ -204,14 +218,10 @@ async function initDb() {
 
     ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_url TEXT;
     ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_type TEXT;
-  `);
 
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT '';
+  `);
 
   const boards = [
     ["mu", "music", "general music discussion"],
@@ -359,6 +369,55 @@ app.post("/login", postLimiter, async (req, res) => {
 app.post("/logout", postLimiter, (req, res) => {
   req.session.user = null;
   res.redirect("/");
+});
+
+app.get("/u/:username", async (req, res) => {
+  const username = cleanText(req.params.username, 30).toLowerCase();
+
+  const user = await pool.query(
+    "SELECT id, username, bio, avatar_url, created_at FROM users WHERE username = $1",
+    [username]
+  );
+
+  if (!user.rows.length) return res.status(404).render("404");
+
+  const threads = await pool.query(
+    "SELECT * FROM threads WHERE author = $1 ORDER BY id DESC LIMIT 50",
+    [username]
+  );
+
+  const replies = await pool.query(
+    "SELECT * FROM replies WHERE author = $1 ORDER BY id DESC LIMIT 50",
+    [username]
+  );
+
+  res.render("profile", {
+    profile: user.rows[0],
+    threads: threads.rows,
+    replies: replies.rows
+  });
+});
+
+app.get("/settings/profile", requireLogin, (req, res) => {
+  res.render("profile-settings", {
+    error: null,
+    user: req.session.user
+  });
+});
+
+app.post("/settings/profile", postLimiter, requireLogin, async (req, res) => {
+  const bio = cleanText(req.body.bio, 500);
+  const avatarUrl = cleanText(req.body.avatar_url, 300);
+
+  await pool.query(
+    "UPDATE users SET bio = $1, avatar_url = $2 WHERE username = $3",
+    [bio, avatarUrl, req.session.user.username]
+  );
+
+  req.session.user.bio = bio;
+  req.session.user.avatar_url = avatarUrl;
+
+  res.redirect("/u/" + req.session.user.username);
 });
 
 app.get("/boards", (req, res) => {
