@@ -322,3 +322,21 @@ button:hover {
 }
   }
 }
+
+.error-page {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.error-page h1 {
+  color: #af0a0f;
+  font-size: 64px;
+  margin: 0;
+}
+
+.error-gif {
+  max-width: 260px;
+  border: 1px solid #b7c5d9;
+  background: #d6daf0;
+  padding: 6px;
+}
