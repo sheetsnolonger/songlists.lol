@@ -495,13 +495,17 @@ app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async 
 });
 
 app.use((err, req, res, next) => {
-  console.error(err);
+  console.error("upload/server error:", err);
 
-  if (err.message === "only images and audio allowed") {
-    return res.status(400).send("only images and audio allowed");
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).send("file too large. max is 15mb.");
   }
 
-  res.status(500).send("server error");
+  if (err.message === "only images and audio allowed") {
+    return res.status(400).send("only images and audio allowed.");
+  }
+
+  res.status(500).send(err.message || "server error");
 });
 
 app.use((req, res) => {
