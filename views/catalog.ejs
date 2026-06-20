@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>catalog - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
 
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/archive">archive</a> ]
+  <br>
+
+  <% boards.forEach(b => { %>
+    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
+  <% }) %>
+</div>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>catalog</h1>
+  <p>all recent threads</p>
+</div>
+
+<% threads.forEach(thread => { %>
+  <div class="post">
+    <div class="post-title">
+      <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
+      <a href="/<%= thread.board_slug %>/thread/<%= thread.id %>"><%= thread.title %></a>
+    </div>
+
+    <div class="post-meta">
+      /<%= thread.board_slug %>/ |
+      replies: <%= thread.reply_count %> |
+      by <%= thread.author %>
+    </div>
+
+    <div class="post-body"><%= thread.body %></div>
+  </div>
+<% }) %>
+
+</body>
+</html>
