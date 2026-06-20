@@ -3,6 +3,11 @@
 <head>
   <title><%= profile.username %> - songlists.lol</title>
   <link rel="stylesheet" href="/style.css">
+  <% if (profile.custom_css) { %>
+  <style>
+    <%= profile.custom_css %>
+  </style>
+<% } %>
 </head>
 <body>
 
