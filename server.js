@@ -621,7 +621,6 @@ app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async 
   return res.status(404).render("404");
 }
   const body = cleanText(req.body.body, 5000);
-  const body = cleanText(req.body.body, 5000);
 
 const author =
   req.session.user?.username ||
