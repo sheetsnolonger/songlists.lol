@@ -154,6 +154,20 @@ function cleanText(text, maxLength) {
   return String(text || "").trim().slice(0, maxLength);
 }
 
+function userBadge(role) {
+  if (role === "admin") {
+    return `<span class="badge admin-badge">admin</span>`;
+  }
+
+  if (role === "mod") {
+    return `<span class="badge mod-badge">mod</span>`;
+  }
+
+  return "";
+}
+
+app.locals.userBadge = userBadge;
+
 function escapeHtml(text) {
   return String(text || "")
     .replaceAll("&", "&amp;")
@@ -165,6 +179,14 @@ function escapeHtml(text) {
 
 function formatBody(text) {
   const escaped = escapeHtml(text);
+
+  function userBadge(username, role) {
+  if (role === "admin") return `<span class="badge admin-badge">admin</span>`;
+  if (role === "mod") return `<span class="badge mod-badge">mod</span>`;
+  return "";
+}
+
+app.locals.userBadge = userBadge;
 
   function requireLogin(req, res, next) {
   if (!req.session.user) return res.redirect("/login");
@@ -235,7 +257,8 @@ async function initDb() {
       reason TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-
+    
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_css TEXT DEFAULT '';
     
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT false;
@@ -245,10 +268,24 @@ async function initDb() {
     ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_url TEXT;
     ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_type TEXT;
 
+    ALTER TABLE threads ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'user';
+    ALTER TABLE replies ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'user';
+
     ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT DEFAULT '';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT '';
+
+    ALTER TABLE threads
+    ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'user';
+
+    ALTER TABLE replies
+    ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'user';
   `);
 
+  await pool.query(`
+  ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user'
+`);
+  
   const boards = [
     ["mu", "music", "general music discussion"],
     ["rok", "rock", "classic, indie, alt rock"],
@@ -334,6 +371,8 @@ app.get("/", async (req, res) => {
   });
 });
 
+
+
 app.get("/signup", (req, res) => {
   res.render("signup", { error: null });
 });
@@ -357,6 +396,8 @@ app.post("/signup", postLimiter, async (req, res) => {
       "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
       [username, hash]
     );
+
+    role TEXT DEFAULT 'user',
 
     req.session.user = { username };
     res.redirect("/");
@@ -388,7 +429,10 @@ app.post("/login", postLimiter, async (req, res) => {
     return res.render("login", { error: "wrong username or password" });
   }
 
-  req.session.user = { username: result.rows[0].username };
+  req.session.user = {
+  username: user.username,
+  role: user.role
+};
   res.redirect("/");
 });
 
@@ -743,9 +787,25 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
   }
 
   await pool.query(
-    `INSERT INTO threads (board_slug, title, body, author, media_url, media_type)
+    `INSERT INTO threads (
+      board_slug,
+      title,
+      body,
+      author,
+      author_role,
+      media_url,
+      media_type
+)
      VALUES ($1, $2, $3, $4, $5, $6)`,
-    [req.params.board, title, body, author, mediaUrl, mediaType]
+    [
+  req.params.board,
+  title,
+  body,
+  author,
+  authorRole,
+  mediaUrl,
+  mediaType
+]
   );
 
   res.redirect(`/${req.params.board}`);
@@ -768,6 +828,9 @@ const author =
   req.session.user?.username ||
   cleanText(req.body.author, 40) ||
   "anon";
+
+  const authorRole =
+  req.session.user?.role || "user";
 
   const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
   const mediaType = req.file ? req.file.mimetype : null;
