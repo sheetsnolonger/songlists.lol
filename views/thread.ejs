@@ -7,30 +7,39 @@
 <body>
 
 <div class="top-nav">
+
   [ <a href="/">home</a> ]
-  [ <a href="/<%= board %>">/<%= board %>/</a> ]
   [ <a href="/catalog">catalog</a> ]
   [ <a href="/archive">archive</a> ]
-<% if (user) { %>
 
-  [ <a href="/u/<%= user.username %>">profile</a> ]
-  [ <a href="/settings/profile">profile settings</a> ]
+  <% if (user) { %>
 
-  <form method="POST" action="/logout" style="display:inline;">
-    <button class="inline-btn">logout</button>
-  </form>
+    [ <a href="/u/<%= user.username %>">profile</a> ]
+    [ <a href="/settings/profile">profile settings</a> ]
 
-<% } else { %>
+    <form method="POST" action="/logout" style="display:inline;">
+      <button class="inline-btn">logout</button>
+    </form>
 
-  [ <a href="/login">login</a> ]
-  [ <a href="/signup">signup</a> ]
+  <% } else { %>
 
-<% } %>
+    [ <a href="/login">login</a> ]
+    [ <a href="/signup">signup</a> ]
+
+  <% } %>
+
+  [ <button id="mobile-toggle">mobile mode</button> ]
+
   <br>
 
-  <% boards.forEach(b => { %>
-    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
-  <% }) %>
+  <% if (typeof boards !== "undefined") { %>
+    <% boards.forEach(board => { %>
+      <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">
+        /<%= board.slug %>/
+      </a>
+    <% }) %>
+  <% } %>
+
 </div>
 
 <div class="header">
