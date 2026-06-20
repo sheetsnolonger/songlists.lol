@@ -1,5 +1,8 @@
 const express = require("express");
 const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 const { Pool } = require("pg");
 
 const app = express();
@@ -10,19 +13,67 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
+if (!process.env.SESSION_SECRET) {
+  console.error("missing SESSION_SECRET");
+  process.exit(1);
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: true
 });
 
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", 1);
+
+app.use(express.urlencoded({ extended: true, limit: "25kb" }));
 app.use(express.static("public"));
 
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "https://files.catbox.moe"],
+      styleSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"]
+    }
+  }
+}));
+
+app.use(rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "too many requests"
+}));
+
+const postLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "slow down"
+});
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || "change-this-secret",
+  store: new pgSession({
+    pool,
+    tableName: "session",
+    createTableIfMissing: true
+  }),
+  name: "songlists.sid",
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
 }));
 
 function requireAdmin(req, res, next) {
@@ -62,7 +113,6 @@ async function initDb() {
 
   const boards = [
     ["mu", "music", "general music discussion"],
-
     ["rok", "rock", "classic, indie, alt rock"],
     ["met", "metal", "death, black, doom, thrash"],
     ["pnk", "punk", "hardcore, crust, oi"],
@@ -70,13 +120,11 @@ async function initDb() {
     ["shg", "shoegaze", "dream pop, noise pop"],
     ["grg", "grunge", "90s alternative"],
     ["gth", "goth", "darkwave, gothic rock"],
-
     ["hip", "hip hop", "rap, trap, underground"],
     ["rnb", "r&b", "neo soul, contemporary"],
     ["pop", "pop", "mainstream and indie pop"],
     ["kpop", "k-pop", "korean pop"],
     ["jpop", "j-pop", "japanese pop"],
-
     ["elec", "electronic", "all electronic music"],
     ["idm", "idm", "braindance, glitch"],
     ["dnb", "drum and bass", "liquid, neuro, rollers"],
@@ -88,26 +136,21 @@ async function initDb() {
     ["brc", "breakcore", "mashcore, lolicore"],
     ["amb", "ambient", "drone, atmospheric"],
     ["vap", "vaporwave", "mallsoft, future funk"],
-
     ["jaz", "jazz", "bebop, fusion"],
     ["blu", "blues", "delta, electric"],
     ["fol", "folk", "traditional, acoustic"],
     ["cty", "country", "americana"],
     ["cls", "classical", "orchestral"],
-
     ["ind", "industrial", "noise, ebm"],
     ["noi", "noise", "harsh noise wall"],
     ["exp", "experimental", "avant-garde"],
-
     ["ost", "soundtracks", "games, anime, movies"],
     ["wld", "world", "regional music"],
     ["lat", "latin", "reggaeton, salsa"],
     ["reg", "reggae", "dub, dancehall"],
-
     ["vin", "vinyl", "record collecting"],
     ["gear", "gear", "headphones, amps"],
     ["prod", "production", "daws, mixing, mastering"],
-
     ["shr", "sharing", "post music"],
     ["rec", "recommendations", "album recommendations"],
     ["cht", "charts", "lists and rankings"]
@@ -125,6 +168,10 @@ async function initDb() {
   }
 }
 
+function cleanText(text, maxLength) {
+  return String(text || "").trim().slice(0, maxLength);
+}
+
 async function getAllBoards() {
   const result = await pool.query(`
     SELECT boards.*, COUNT(threads.id) AS thread_count
@@ -137,7 +184,7 @@ async function getAllBoards() {
   return result.rows;
 }
 
-/* homepage */
+/* pages */
 
 app.get("/", async (req, res) => {
   const boards = await getAllBoards();
@@ -154,8 +201,6 @@ app.get("/", async (req, res) => {
     recent: recent.rows
   });
 });
-
-/* extra pages */
 
 app.get("/boards", (req, res) => {
   res.redirect("/");
@@ -201,7 +246,7 @@ app.get("/admin-login", (req, res) => {
   res.render("admin-login", { error: null });
 });
 
-app.post("/admin-login", (req, res) => {
+app.post("/admin-login", postLimiter, (req, res) => {
   if (!process.env.ADMIN_PASSWORD) {
     return res.send("ADMIN_PASSWORD is not set in Render env vars");
   }
@@ -214,7 +259,7 @@ app.post("/admin-login", (req, res) => {
   res.render("admin-login", { error: "wrong password" });
 });
 
-app.post("/admin-logout", requireAdmin, (req, res) => {
+app.post("/admin-logout", requireAdmin, postLimiter, (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
   });
@@ -246,27 +291,27 @@ app.get("/secret-admin", requireAdmin, async (req, res) => {
   });
 });
 
-app.post("/admin/thread/:id/delete", requireAdmin, async (req, res) => {
+app.post("/admin/thread/:id/delete", requireAdmin, postLimiter, async (req, res) => {
   await pool.query("DELETE FROM threads WHERE id = $1", [req.params.id]);
   res.redirect("/secret-admin");
 });
 
-app.post("/admin/thread/:id/pin", requireAdmin, async (req, res) => {
+app.post("/admin/thread/:id/pin", requireAdmin, postLimiter, async (req, res) => {
   await pool.query("UPDATE threads SET pinned = true WHERE id = $1", [req.params.id]);
   res.redirect("/secret-admin");
 });
 
-app.post("/admin/thread/:id/unpin", requireAdmin, async (req, res) => {
+app.post("/admin/thread/:id/unpin", requireAdmin, postLimiter, async (req, res) => {
   await pool.query("UPDATE threads SET pinned = false WHERE id = $1", [req.params.id]);
   res.redirect("/secret-admin");
 });
 
-app.post("/admin/reply/:id/delete", requireAdmin, async (req, res) => {
+app.post("/admin/reply/:id/delete", requireAdmin, postLimiter, async (req, res) => {
   await pool.query("DELETE FROM replies WHERE id = $1", [req.params.id]);
   res.redirect("/secret-admin");
 });
 
-/* board pages */
+/* board */
 
 app.get("/:board", async (req, res) => {
   const boards = await getAllBoards();
@@ -294,7 +339,7 @@ app.get("/:board", async (req, res) => {
   });
 });
 
-app.post("/:board/thread", async (req, res) => {
+app.post("/:board/thread", postLimiter, async (req, res) => {
   const board = await pool.query(
     "SELECT * FROM boards WHERE slug = $1",
     [req.params.board]
@@ -302,9 +347,9 @@ app.post("/:board/thread", async (req, res) => {
 
   if (!board.rows.length) return res.status(404).send("board not found");
 
-  const title = req.body.title?.trim();
-  const body = req.body.body?.trim();
-  const author = req.body.author?.trim() || "anon";
+  const title = cleanText(req.body.title, 120);
+  const body = cleanText(req.body.body, 5000);
+  const author = cleanText(req.body.author, 40) || "anon";
 
   if (!title || !body) return res.send("title and body required");
 
@@ -340,7 +385,7 @@ app.get("/:board/thread/:id", async (req, res) => {
   });
 });
 
-app.post("/:board/thread/:id/reply", async (req, res) => {
+app.post("/:board/thread/:id/reply", postLimiter, async (req, res) => {
   const thread = await pool.query(
     "SELECT * FROM threads WHERE id = $1 AND board_slug = $2",
     [req.params.id, req.params.board]
@@ -348,8 +393,8 @@ app.post("/:board/thread/:id/reply", async (req, res) => {
 
   if (!thread.rows.length) return res.status(404).send("thread not found");
 
-  const body = req.body.body?.trim();
-  const author = req.body.author?.trim() || "anon";
+  const body = cleanText(req.body.body, 5000);
+  const author = cleanText(req.body.author, 40) || "anon";
 
   if (!body) return res.send("reply required");
 
@@ -359,6 +404,12 @@ app.post("/:board/thread/:id/reply", async (req, res) => {
   );
 
   res.redirect(`/${req.params.board}/thread/${req.params.id}`);
+});
+
+/* 404 */
+
+app.use((req, res) => {
+  res.status(404).send("page not found");
 });
 
 /* start */
