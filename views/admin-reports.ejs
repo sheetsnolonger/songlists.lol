@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>admin reports</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/secret-admin">admin home</a> ]
+  [ <a href="/">site home</a> ]
+</div>
+
+<h1 class="section-title">reports</h1>
+
+<% reports.forEach(report => { %>
+  <div class="post">
+    <div class="post-title">
+      report: <%= report.type %> no.<%= report.target_id %>
+    </div>
+
+    <div class="post-meta">
+      <%= new Date(report.created_at).toLocaleString() %>
+    </div>
+
+    <div class="post-body">
+      <%= report.reason || "no reason given" %>
+    </div>
+  </div>
+<% }) %>
+
+</body>
+</html>
