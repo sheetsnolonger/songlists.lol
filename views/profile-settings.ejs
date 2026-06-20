@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>profile settings - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/u/<%= user.username %>">my profile</a> ]
+</div>
+
+<div class="header">
+  <h1>profile settings</h1>
+</div>
+
+<% if (error) { %>
+  <div class="notice"><%= error %></div>
+<% } %>
+
+<div class="post-form">
+  <form method="POST" action="/settings/profile">
+    <input name="avatar_url" placeholder="avatar image url">
+    <textarea name="bio" placeholder="bio"></textarea>
+    <button>save profile</button>
+  </form>
+</div>
+
+</body>
+</html>
