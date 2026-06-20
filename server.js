@@ -514,7 +514,21 @@ app.post("/admin-logout", requireAdmin, postLimiter, (req, res) => {
 app.get("/secret-admin", requireAdmin, async (req, res) => {
   res.render("admin");
 });
+app.get("/admin/reports", requireAdmin, async (req, res) => {
   const boards = await getAllBoards();
+
+  const reports = await pool.query(`
+    SELECT *
+    FROM reports
+    ORDER BY id DESC
+    LIMIT 200
+  `);
+
+  res.render("admin-reports", {
+    boards,
+    reports: reports.rows
+  });
+});
 
   const threads = await pool.query(`
     SELECT threads.*, COUNT(replies.id) AS reply_count
