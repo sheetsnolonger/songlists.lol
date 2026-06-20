@@ -514,6 +514,7 @@ app.post("/admin-logout", requireAdmin, postLimiter, (req, res) => {
 app.get("/secret-admin", requireAdmin, async (req, res) => {
   res.render("admin");
 });
+
 app.get("/admin/reports", requireAdmin, async (req, res) => {
   const boards = await getAllBoards();
 
@@ -544,27 +545,7 @@ app.get("/admin/threads", requireAdmin, async (req, res) => {
   });
 });
 
-  const replies = await pool.query(`
-    SELECT replies.*, threads.title AS thread_title, threads.board_slug
-    FROM replies
-    JOIN threads ON threads.id = replies.thread_id
-    ORDER BY replies.id DESC
-    LIMIT 100
-  `);
 
-  const users = await pool.query(`
-    SELECT id, username, created_at
-    FROM users
-    ORDER BY id DESC
-`);
-  
-res.render("admin", {
-  boards,
-  threads: threads.rows,
-  replies: replies.rows,
-  reports: reports.rows,
-  users: users.rows
-});
 
 app.post("/admin/thread/:id/delete", requireAdmin, postLimiter, async (req, res) => {
   await pool.query("DELETE FROM threads WHERE id = $1", [req.params.id]);
