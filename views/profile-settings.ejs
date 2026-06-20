@@ -15,17 +15,16 @@
   <h1>profile settings</h1>
 </div>
 
-<% if (error) { %>
-  <div class="notice"><%= error %></div>
-<% } %>
-
 <div class="post-form">
-  <form method="POST" action="/settings/profile" enctype="multipart/form-data">
-    <label>avatar image</label>
-    <input type="file" name="avatar" accept="image/*">
+  <form method="POST" action="/settings/profile">
+    <label>avatar image url</label>
+    <input name="avatar_url" placeholder="https://files.catbox.moe/image.jpg" value="<%= user.avatar_url || '' %>">
 
     <label>bio</label>
-    <textarea name="bio" placeholder="bio"><%= user.bio || "" %></textarea>
+    <textarea name="bio"><%= user.bio || "" %></textarea>
+
+    <label>custom profile css</label>
+    <textarea name="custom_css"><%= user.custom_css || "" %></textarea>
 
     <button>save profile</button>
   </form>
