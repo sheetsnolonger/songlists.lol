@@ -23,9 +23,9 @@
       joined <%= new Date(user.created_at).toLocaleString() %>
     </div>
 
-    <form method="POST" action="/admin/user/<%= user.id %>/delete">
-      <button>delete user</button>
-    </form>
+<form method="POST" action="/admin/user/<%= user.id %>/delete" onsubmit="return confirm('delete this user? their posts may remain.');">
+  <button>delete user</button>
+</form>
   </div>
 <% }) %>
 
