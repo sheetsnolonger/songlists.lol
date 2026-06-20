@@ -456,43 +456,23 @@ app.get("/settings/profile", requireLogin, async (req, res) => {
   });
 });
 
-app.post(
-  "/settings/profile",
-  postLimiter,
-  requireLogin,
-  upload.single("avatar"),
-  async (req, res) => {
-    const bio = cleanText(req.body.bio, 500);
-    const customCss = cleanText(req.body.custom_css, 3000);
+app.post("/settings/profile", postLimiter, requireLogin, async (req, res) => {
+  const bio = cleanText(req.body.bio, 500);
+  const avatarUrl = cleanText(req.body.avatar_url, 500);
+  const customCss = String(req.body.custom_css || "").slice(0, 3000);
 
-    let avatarUrl = null;
+  await pool.query(
+    `UPDATE users
+     SET bio = $1,
+         avatar_url = $2,
+         custom_css = $3
+     WHERE username = $4`,
+    [bio, avatarUrl, customCss, req.session.user.username]
+  );
 
-    if (req.file) {
-      avatarUrl = "/uploads/" + req.file.filename;
-    }
+  res.redirect("/u/" + req.session.user.username);
+});
 
-    if (avatarUrl) {
-      await pool.query(
-        `UPDATE users
-         SET bio = $1,
-             avatar_url = $2,
-             custom_css = $3
-         WHERE username = $4`,
-        [bio, avatarUrl, customCss, req.session.user.username]
-      );
-    } else {
-      await pool.query(
-        `UPDATE users
-         SET bio = $1,
-             custom_css = $2
-         WHERE username = $3`,
-        [bio, customCss, req.session.user.username]
-      );
-    }
-
-    res.redirect("/u/" + req.session.user.username);
-  }
-);
 app.get("/boards", (req, res) => {
   res.redirect("/");
 });
