@@ -451,21 +451,24 @@ app.post("/logout", postLimiter, (req, res) => {
 
 
 app.get("/u/:username", async (req, res) => {
+  const boards = await getAllBoards();
   const username = cleanText(req.params.username, 30).toLowerCase();
 
-  if (req.params.username.toLowerCase() === "anon") {
-  return res.status(404).render("404");
-}
-  
-const profile = await pool.query(
-  `SELECT username, bio, avatar_url, custom_css, role, created_at
-   FROM users
-   WHERE username = $1`,
-  [req.params.username]
-);
-  
-  if (!profile.rows.length) return res.status(404).render("404");
-  
+  if (username === "anon") {
+    return res.status(404).render("404", { boards });
+  }
+
+  const profile = await pool.query(
+    `SELECT username, bio, avatar_url, custom_css, role, created_at
+     FROM users
+     WHERE username = $1`,
+    [username]
+  );
+
+  if (!profile.rows.length) {
+    return res.status(404).render("404", { boards });
+  }
+
   const threads = await pool.query(
     "SELECT * FROM threads WHERE author = $1 ORDER BY id DESC LIMIT 50",
     [username]
@@ -477,6 +480,7 @@ const profile = await pool.query(
   );
 
   res.render("profile", {
+    boards,
     profile: profile.rows[0],
     threads: threads.rows,
     replies: replies.rows
