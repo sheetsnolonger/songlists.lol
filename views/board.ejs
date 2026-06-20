@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>/<%= board.slug %>/ - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/catalog">catalog</a> ]
+  [ <a href="/archive">archive</a> ]
+  <br>
+
+  <% boards.forEach(b => { %>
+    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
+  <% }) %>
+</div>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>/<%= board.slug %>/</h1>
+  <p><%= board.name %></p>
+  <p><%= board.description %></p>
+</div>
+
+<div class="post-form">
+  <h2>new thread</h2>
+  <form method="POST" action="/<%= board.slug %>/thread">
+    <input name="author" placeholder="name (optional)">
+    <input name="title" placeholder="thread title" required>
+    <textarea name="body" placeholder="post body" required></textarea>
+    <button>post</button>
+  </form>
+</div>
+
+<h2 class="section-title">threads</h2>
+
+<% if (threads.length === 0) { %>
+  <div class="post">no threads yet.</div>
+<% } %>
+
+<% threads.forEach(thread => { %>
+  <div class="post">
+    <div class="post-title">
+      <% if (thread.pinned) { %><span class="pinned">[pinned]</span><% } %>
+      <a href="/<%= board.slug %>/thread/<%= thread.id %>"><%= thread.title %></a>
+    </div>
+
+    <div class="post-meta">
+      <b><%= thread.author %></b> |
+      replies: <%= thread.reply_count %> |
+      <%= new Date(thread.created_at).toLocaleString() %>
+    </div>
+
+    <div class="post-body"><%= thread.body %></div>
+  </div>
+<% }) %>
+
+</body>
+</html>
