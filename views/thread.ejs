@@ -48,13 +48,10 @@
 
 <div class="post op" id="t<%= thread.id %>">
 
-<form method="POST" action="/report/thread/<%= thread.id %>">
-  <input
-    type="text"
-    name="reason"
-    maxlength="300"
-    placeholder="reason for report"
-  >
+<form method="POST" action="/report/thread/<%= thread.id %>" class="report-form">
+  <input name="reason" maxlength="300" placeholder="report reason">
+  <button type="submit">report thread</button>
+</form>
 
   <button type="submit">
     report thread
@@ -112,13 +109,10 @@
 <% replies.forEach(reply => { %>
   <div class="post" id="p<%= reply.id %>">
 
-<form method="POST" action="/report/reply/<%= reply.id %>">
-  <input
-    type="text"
-    name="reason"
-    maxlength="300"
-    placeholder="reason for report"
-  >
+<form method="POST" action="/report/reply/<%= reply.id %>" class="report-form">
+  <input name="reason" maxlength="300" placeholder="report reason">
+  <button type="submit">report reply</button>
+</form>
 
   <button type="submit">
     report reply
