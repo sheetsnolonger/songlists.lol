@@ -73,7 +73,11 @@
   <div class="post" id="p<%= reply.id %>">
 
     <div class="post-meta">
-      <b><%= reply.author %></b>
+      <b>
+  <a href="/u/<%= reply.author %>">
+    <%= reply.author %>
+  </a>
+</b>
       |
       no.<%= reply.id %>
       |
