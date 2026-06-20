@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -123,6 +124,11 @@ app.use(session({
   }
 }));
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
+
 function requireAdmin(req, res, next) {
   if (!req.session.admin) return res.redirect("/admin-login");
   next();
@@ -199,6 +205,13 @@ async function initDb() {
     ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_url TEXT;
     ALTER TABLE replies ADD COLUMN IF NOT EXISTS media_type TEXT;
   `);
+
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
   const boards = [
     ["mu", "music", "general music discussion"],
@@ -283,6 +296,69 @@ app.get("/", async (req, res) => {
     boards,
     recent: recent.rows
   });
+});
+
+app.get("/signup", (req, res) => {
+  res.render("signup", { error: null });
+});
+
+app.post("/signup", postLimiter, async (req, res) => {
+  const username = cleanText(req.body.username, 30).toLowerCase();
+  const password = String(req.body.password || "");
+
+  if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+    return res.render("signup", { error: "username must be 3-30 letters, numbers, or underscores" });
+  }
+
+  if (password.length < 8) {
+    return res.render("signup", { error: "password must be at least 8 characters" });
+  }
+
+  const hash = await bcrypt.hash(password, 12);
+
+  try {
+    await pool.query(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
+      [username, hash]
+    );
+
+    req.session.user = { username };
+    res.redirect("/");
+  } catch {
+    res.render("signup", { error: "username already taken" });
+  }
+});
+
+app.get("/login", (req, res) => {
+  res.render("login", { error: null });
+});
+
+app.post("/login", postLimiter, async (req, res) => {
+  const username = cleanText(req.body.username, 30).toLowerCase();
+  const password = String(req.body.password || "");
+
+  const result = await pool.query(
+    "SELECT * FROM users WHERE username = $1",
+    [username]
+  );
+
+  if (!result.rows.length) {
+    return res.render("login", { error: "wrong username or password" });
+  }
+
+  const ok = await bcrypt.compare(password, result.rows[0].password_hash);
+
+  if (!ok) {
+    return res.render("login", { error: "wrong username or password" });
+  }
+
+  req.session.user = { username: result.rows[0].username };
+  res.redirect("/");
+});
+
+app.post("/logout", postLimiter, (req, res) => {
+  req.session.user = null;
+  res.redirect("/");
 });
 
 app.get("/boards", (req, res) => {
@@ -400,7 +476,9 @@ app.get("/:board", async (req, res) => {
     [req.params.board]
   );
 
-  if (!board.rows.length) return res.status(404).send("board not found");
+  if (!board.rows.length) {
+  return res.status(404).send("board not found");
+}
 
   const threads = await pool.query(`
     SELECT threads.*, COUNT(replies.id) AS reply_count
@@ -429,8 +507,7 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
 }
   const title = cleanText(req.body.title, 120);
   const body = cleanText(req.body.body, 5000);
-  const author = cleanText(req.body.author, 40) || "anon";
-
+  const author = req.session.user?.username || cleanText(req.body.author, 40) || "anon";
   const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
   const mediaType = req.file ? req.file.mimetype : null;
 
@@ -480,7 +557,12 @@ app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async 
   return res.status(404).render("404");
 }
   const body = cleanText(req.body.body, 5000);
-  const author = cleanText(req.body.author, 40) || "anon";
+  const body = cleanText(req.body.body, 5000);
+
+const author =
+  req.session.user?.username ||
+  cleanText(req.body.author, 40) ||
+  "anon";
 
   const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
   const mediaType = req.file ? req.file.mimetype : null;
