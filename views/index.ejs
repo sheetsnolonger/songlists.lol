@@ -5,14 +5,107 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+
 <div class="top-nav">
   [ <a href="/">home</a> ]
-  [ <a href="/boards">boards</a> ]
   [ <a href="/catalog">catalog</a> ]
   [ <a href="/archive">archive</a> ]
   [ <a href="/admin-login">admin</a> ]
+  <br>
+
+  <% boards.forEach(b => { %>
+    <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
+  <% }) %>
 </div>
-<h1>songlists.lol</h1>
-<p>music genre imageboard</p>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>songlists.lol</h1>
+  <p>/mu/ - music genre imageboard</p>
+  <p>talk about music. share songs. argue about genres.</p>
+</div>
+
+<div class="notice">
+  welcome to songlists.lol. pick a board and post.
+</div>
+
+<div class="board-wrap">
+
+  <div class="board-category">
+    <h2>general</h2>
+    <% boards.filter(b => ["mu", "shr", "rec", "cht"].includes(b.slug)).forEach(board => { %>
+      <div class="board-entry">
+        <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">/<%= board.slug %>/</a>
+        <span><%= board.name %></span>
+        <small>- <%= board.description %></small>
+        <em><%= board.thread_count %> threads</em>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="board-category">
+    <h2>rock / guitar</h2>
+    <% boards.filter(b => ["rok", "met", "pnk", "emo", "shg", "grg", "gth"].includes(b.slug)).forEach(board => { %>
+      <div class="board-entry">
+        <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">/<%= board.slug %>/</a>
+        <span><%= board.name %></span>
+        <small>- <%= board.description %></small>
+        <em><%= board.thread_count %> threads</em>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="board-category">
+    <h2>pop / rap</h2>
+    <% boards.filter(b => ["hip", "rnb", "pop", "kpop", "jpop"].includes(b.slug)).forEach(board => { %>
+      <div class="board-entry">
+        <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">/<%= board.slug %>/</a>
+        <span><%= board.name %></span>
+        <small>- <%= board.description %></small>
+        <em><%= board.thread_count %> threads</em>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="board-category">
+    <h2>electronic</h2>
+    <% boards.filter(b => ["elec", "idm", "dnb", "dub", "tec", "hou", "tra", "hxc", "brc", "amb", "vap"].includes(b.slug)).forEach(board => { %>
+      <div class="board-entry">
+        <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">/<%= board.slug %>/</a>
+        <span><%= board.name %></span>
+        <small>- <%= board.description %></small>
+        <em><%= board.thread_count %> threads</em>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="board-category">
+    <h2>other</h2>
+    <% boards.filter(b => ["jaz", "blu", "fol", "cty", "cls", "ind", "noi", "exp", "ost", "wld", "lat", "reg", "vin", "gear", "prod"].includes(b.slug)).forEach(board => { %>
+      <div class="board-entry">
+        <a class="genre-<%= board.slug %>" href="/<%= board.slug %>">/<%= board.slug %>/</a>
+        <span><%= board.name %></span>
+        <small>- <%= board.description %></small>
+        <em><%= board.thread_count %> threads</em>
+      </div>
+    <% }) %>
+  </div>
+
+</div>
+
+<h2 class="section-title">recent threads</h2>
+
+<% recent.forEach(thread => { %>
+  <div class="recent-thread">
+    <a href="/<%= thread.board_slug %>/thread/<%= thread.id %>">
+      <% if (thread.pinned) { %>[pinned] <% } %><%= thread.title %>
+    </a>
+    <span>/<%= thread.board_slug %>/</span>
+    <small>by <%= thread.author %></small>
+  </div>
+<% }) %>
+
+<div class="footer">- songlists.lol -</div>
+
 </body>
 </html>
