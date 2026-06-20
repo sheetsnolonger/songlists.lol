@@ -786,11 +786,17 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
 }
   const title = cleanText(req.body.title, 120);
   const body = cleanText(req.body.body, 5000);
-  const author = req.session.user?.username || cleanText(req.body.author, 40) || "anon";
-  const authorRole = req.session.user?.role || "user";
-  const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
-  const mediaType = req.file ? req.file.mimetype : null;
 
+const author =
+  req.session.user?.username ||
+  cleanText(req.body.author, 40) ||
+  "anon";
+
+const authorRole =
+  req.session.user?.role || "user";
+
+const mediaUrl = req.file ? "/uploads/" + req.file.filename : null;
+const mediaType = req.file ? req.file.mimetype : null;
   if (!title || (!body && !mediaUrl)) {
     return res.send("title and post body or file required");
   }
