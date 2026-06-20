@@ -512,6 +512,8 @@ app.post("/admin-logout", requireAdmin, postLimiter, (req, res) => {
 });
 
 app.get("/secret-admin", requireAdmin, async (req, res) => {
+  res.render("admin");
+});
   const boards = await getAllBoards();
 
   const threads = await pool.query(`
@@ -567,6 +569,59 @@ app.post("/admin/reply/:id/delete", requireAdmin, postLimiter, async (req, res) 
 app.post("/admin/user/:id/delete", requireAdmin, postLimiter, async (req, res) => {
   await pool.query("DELETE FROM users WHERE id = $1", [req.params.id]);
   res.redirect("/secret-admin");
+});
+
+app.get("/admin/threads", requireAdmin, async (req, res) => {
+  const threads = await pool.query(`
+    SELECT threads.*, COUNT(replies.id) AS reply_count
+    FROM threads
+    LEFT JOIN replies ON replies.thread_id = threads.id
+    GROUP BY threads.id
+    ORDER BY pinned DESC, id DESC
+  `);
+
+  res.render("admin-threads", {
+    threads: threads.rows
+  });
+});
+
+app.get("/admin/replies", requireAdmin, async (req, res) => {
+  const replies = await pool.query(`
+    SELECT replies.*, threads.title AS thread_title, threads.board_slug
+    FROM replies
+    JOIN threads ON threads.id = replies.thread_id
+    ORDER BY replies.id DESC
+    LIMIT 200
+  `);
+
+  res.render("admin-replies", {
+    replies: replies.rows
+  });
+});
+
+app.get("/admin/users", requireAdmin, async (req, res) => {
+  const users = await pool.query(`
+    SELECT id, username, created_at
+    FROM users
+    ORDER BY id DESC
+  `);
+
+  res.render("admin-users", {
+    users: users.rows
+  });
+});
+
+app.get("/admin/reports", requireAdmin, async (req, res) => {
+  const reports = await pool.query(`
+    SELECT *
+    FROM reports
+    ORDER BY id DESC
+    LIMIT 200
+  `);
+
+  res.render("admin-reports", {
+    reports: reports.rows
+  });
 });
   
 app.get("/:board", async (req, res) => {
