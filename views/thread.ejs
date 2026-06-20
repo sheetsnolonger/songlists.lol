@@ -49,6 +49,19 @@
 
 <div class="post op" id="t<%= thread.id %>">
 
+<form method="POST" action="/report/thread/<%= thread.id %>">
+  <input
+    type="text"
+    name="reason"
+    maxlength="300"
+    placeholder="reason for report"
+  >
+
+  <button type="submit">
+    report thread
+  </button>
+</form>
+
   <div class="post-title">
     <% if (thread.pinned) { %>
       <span class="pinned">[pinned]</span>
@@ -99,6 +112,19 @@
 
 <% replies.forEach(reply => { %>
   <div class="post" id="p<%= reply.id %>">
+
+<form method="POST" action="/report/reply/<%= reply.id %>">
+  <input
+    type="text"
+    name="reason"
+    maxlength="300"
+    placeholder="reason for report"
+  >
+
+  <button type="submit">
+    report reply
+  </button>
+</form>
 
     <div class="post-meta">
 <% replies.forEach(reply => { %>
