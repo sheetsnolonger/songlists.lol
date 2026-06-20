@@ -35,10 +35,15 @@
 
   <div class="post-meta">
     <b>
-  <a href="/u/<%= thread.author %>">
-    <%= thread.author %>
-  </a>
-</b>
+  <% if (reply.author !== "anon") { %>
+  <b>
+    <a href="/u/<%= reply.author %>">
+      <%= reply.author %>
+    </a>
+  </b>
+<% } else { %>
+  <b>anon</b>
+<% } %>
     |
     no.<%= thread.id %>
     |
