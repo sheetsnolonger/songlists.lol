@@ -228,6 +228,14 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS reports (
+      id SERIAL PRIMARY KEY,
+      type TEXT NOT NULL,
+      target_id INTEGER NOT NULL,
+      reason TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT false;
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS media_url TEXT;
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS media_type TEXT;
