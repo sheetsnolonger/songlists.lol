@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>signup - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/login">login</a> ]
+</div>
+
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>signup</h1>
+</div>
+
+<% if (error) { %>
+  <div class="notice"><%= error %></div>
+<% } %>
+
+<div class="post-form">
+  <form method="POST" action="/signup">
+    <input name="username" placeholder="username" required>
+    <input type="password" name="password" placeholder="password" required>
+    <button>signup</button>
+  </form>
+</div>
+
+</body>
+</html>
