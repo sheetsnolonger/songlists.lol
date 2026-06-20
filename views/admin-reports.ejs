@@ -1,31 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>admin reports</title>
+  <title>admin reports - songlists.lol</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <div class="top-nav">
   [ <a href="/secret-admin">admin home</a> ]
+  [ <a href="/admin/threads">threads</a> ]
+  [ <a href="/admin/replies">replies</a> ]
+  [ <a href="/admin/users">users</a> ]
   [ <a href="/">site home</a> ]
 </div>
 
-<h1 class="section-title">reports</h1>
+<div class="header">
+  <h1>reports</h1>
+  <p>review reported threads and replies</p>
+</div>
+
+<% if (reports.length === 0) { %>
+  <div class="post">no reports.</div>
+<% } %>
 
 <% reports.forEach(report => { %>
   <div class="post">
+
     <div class="post-title">
-      report: <%= report.type %> no.<%= report.target_id %>
+      report no.<%= report.id %>:
+      <%= report.type %>
+      no.<%= report.target_id %>
     </div>
 
     <div class="post-meta">
-      <%= new Date(report.created_at).toLocaleString() %>
+      reported <%= new Date(report.created_at).toLocaleString() %>
     </div>
 
     <div class="post-body">
       <%= report.reason || "no reason given" %>
     </div>
+
+    <% if (report.type === "thread") { %>
+      <form
+        method="POST"
+        action="/admin/thread/<%= report.target_id %>/delete"
+        onsubmit="return confirm('delete this reported thread? this cannot be undone.');"
+      >
+        <button>delete reported thread</button>
+      </form>
+    <% } %>
+
+    <% if (report.type === "reply") { %>
+      <form
+        method="POST"
+        action="/admin/reply/<%= report.target_id %>/delete"
+        onsubmit="return confirm('delete this reported reply? this cannot be undone.');"
+      >
+        <button>delete reported reply</button>
+      </form>
+    <% } %>
+
   </div>
 <% }) %>
 
