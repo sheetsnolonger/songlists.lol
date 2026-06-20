@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>admin replies</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/secret-admin">admin home</a> ]
+  [ <a href="/">site home</a> ]
+</div>
+
+<h1 class="section-title">replies</h1>
+
+<% replies.forEach(reply => { %>
+  <div class="post">
+    <div class="post-meta">
+      reply to
+      <a href="/<%= reply.board_slug %>/thread/<%= reply.thread_id %>">
+        <%= reply.thread_title %>
+      </a>
+      by <%= reply.author %>
+    </div>
+
+    <div class="post-body"><%= reply.body %></div>
+
+    <form method="POST" action="/admin/reply/<%= reply.id %>/delete">
+      <button>delete reply</button>
+    </form>
+  </div>
+<% }) %>
+
+</body>
+</html>
