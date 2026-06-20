@@ -236,6 +236,8 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_css TEXT DEFAULT '';
+    
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT false;
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS media_url TEXT;
     ALTER TABLE threads ADD COLUMN IF NOT EXISTS media_type TEXT;
