@@ -20,9 +20,13 @@
 <% } %>
 
 <div class="post-form">
-  <form method="POST" action="/settings/profile">
-    <input name="avatar_url" placeholder="avatar image url">
-    <textarea name="bio" placeholder="bio"></textarea>
+  <form method="POST" action="/settings/profile" enctype="multipart/form-data">
+    <label>avatar image</label>
+    <input type="file" name="avatar" accept="image/*">
+
+    <label>bio</label>
+    <textarea name="bio" placeholder="bio"><%= user.bio || "" %></textarea>
+
     <button>save profile</button>
   </form>
 </div>
