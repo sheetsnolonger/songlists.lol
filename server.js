@@ -424,8 +424,9 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
     [req.params.board]
   );
 
-  if (!board.rows.length) return res.status(404).send("board not found");
-
+  if (!board.rows.length) {
+  return res.status(404).render("404");
+}
   const title = cleanText(req.body.title, 120);
   const body = cleanText(req.body.body, 5000);
   const author = cleanText(req.body.author, 40) || "anon";
@@ -475,8 +476,9 @@ app.post("/:board/thread/:id/reply", postLimiter, upload.single("media"), async 
     [req.params.id, req.params.board]
   );
 
-  if (!thread.rows.length) return res.status(404).send("thread not found");
-
+  if (!thread.rows.length) {
+  return res.status(404).render("404");
+}
   const body = cleanText(req.body.body, 5000);
   const author = cleanText(req.body.author, 40) || "anon";
 
