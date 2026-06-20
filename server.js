@@ -729,7 +729,7 @@ app.post("/:board/thread", postLimiter, upload.single("media"), async (req, res)
 if (!thread.rows.length) {
   return res.status(404).render("404");
 }
-  const boards = await getAllBoards();
+
 
   const thread = await pool.query(
     "SELECT * FROM threads WHERE id = $1 AND board_slug = $2",
