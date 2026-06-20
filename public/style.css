@@ -25,7 +25,7 @@ body::before {
   z-index: -2;
   background:
     linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.88)),
-    url("/images/blood-bg.jpg");
+    url("/public/images/blood-bg.jpg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
