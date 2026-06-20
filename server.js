@@ -371,9 +371,14 @@ app.post("/logout", postLimiter, (req, res) => {
   res.redirect("/");
 });
 
+
 app.get("/u/:username", async (req, res) => {
   const username = cleanText(req.params.username, 30).toLowerCase();
 
+  if (req.params.username.toLowerCase() === "anon") {
+  return res.status(404).render("404");
+}
+  
   const user = await pool.query(
     "SELECT id, username, bio, avatar_url, created_at FROM users WHERE username = $1",
     [username]
