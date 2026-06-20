@@ -648,15 +648,29 @@ app.get("/admin/reports", requireAdmin, async (req, res) => {
   });
 });
 
-app.post("/report/thread/:id", postLimiter, async (req, res) => {
-  const reason = cleanText(req.body.reason, 300);
+app.get("/:board/thread/:id", async (req, res) => {
+  const boards = await getAllBoards();
 
-  await pool.query(
-    "INSERT INTO reports (type, target_id, reason) VALUES ($1, $2, $3)",
-    ["thread", req.params.id, reason]
+  const thread = await pool.query(
+    "SELECT * FROM threads WHERE id = $1 AND board_slug = $2",
+    [req.params.id, req.params.board]
   );
 
-  res.redirect(req.get("Referer") || "/");
+  if (!thread.rows.length) {
+    return res.status(404).render("404", { boards });
+  }
+
+  const replies = await pool.query(
+    "SELECT * FROM replies WHERE thread_id = $1 ORDER BY id ASC",
+    [req.params.id]
+  );
+
+  res.render("thread", {
+    boards,
+    board: req.params.board,
+    thread: thread.rows[0],
+    replies: replies.rows
+  });
 });
 
 app.post("/report/reply/:id", postLimiter, async (req, res) => {
@@ -730,13 +744,6 @@ if (!thread.rows.length) {
   return res.status(404).render("404");
 }
 
-
-  const thread = await pool.query(
-    "SELECT * FROM threads WHERE id = $1 AND board_slug = $2",
-    [req.params.id, req.params.board]
-  );
-
-  if (!thread.rows.length) return res.status(404).send("thread not found");
 
   const replies = await pool.query(
     "SELECT * FROM replies WHERE thread_id = $1 ORDER BY id ASC",
