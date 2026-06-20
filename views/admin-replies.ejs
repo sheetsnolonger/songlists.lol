@@ -25,9 +25,9 @@
 
     <div class="post-body"><%= reply.body %></div>
 
-    <form method="POST" action="/admin/reply/<%= reply.id %>/delete">
-      <button>delete reply</button>
-    </form>
+    <form method="POST" action="/admin/reply/<%= reply.id %>/delete" onsubmit="return confirm('delete this reply? this cannot be undone.');">
+  <button>delete reply</button>
+</form>
   </div>
 <% }) %>
 
