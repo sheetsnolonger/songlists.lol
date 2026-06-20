@@ -530,6 +530,7 @@ app.get("/admin/reports", requireAdmin, async (req, res) => {
   });
 });
 
+app.get("/admin/threads", requireAdmin, async (req, res) => {
   const threads = await pool.query(`
     SELECT threads.*, COUNT(replies.id) AS reply_count
     FROM threads
@@ -537,6 +538,11 @@ app.get("/admin/reports", requireAdmin, async (req, res) => {
     GROUP BY threads.id
     ORDER BY pinned DESC, id DESC
   `);
+
+  res.render("admin-threads", {
+    threads: threads.rows
+  });
+});
 
   const replies = await pool.query(`
     SELECT replies.*, threads.title AS thread_title, threads.board_slug
