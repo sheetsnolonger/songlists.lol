@@ -652,3 +652,9 @@ body::after {
     opacity: 0;
   }
 }
+
+@media (max-width: 700px) {
+  #star-rain {
+    display: none;
+  }
+}
