@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title><%= thread.title %> - songlists.lol</title>
-<link rel="icon" type="image/png" href="https://files.catbox.moe/kxbylk.png">
+
+  <link rel="icon" href="https://files.catbox.moe/kxbylk.png">
+  <link rel="shortcut icon" href="https://files.catbox.moe/kxbylk.png">
+  <link rel="apple-touch-icon" href="https://files.catbox.moe/kxbylk.png">
+
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -15,7 +22,10 @@
   <% if (user) { %>
     [ <a href="/u/<%= user.username %>">profile</a> ]
     [ <a href="/settings/profile">profile settings</a> ]
-    [ <a href="/logout">logout</a> ]
+
+    <form method="POST" action="/logout" style="display:inline;">
+      [ <button class="inline-btn" type="submit">logout</button> ]
+    </form>
   <% } else { %>
     [ <a href="/login">login</a> ]
     [ <a href="/signup">signup</a> ]
@@ -24,18 +34,18 @@
 
 <div class="board-nav">
   <% if (typeof boards !== "undefined") { %>
-    <% boards.forEach(board => { %>
-      <a href="/<%= board.slug %>">/<%= board.slug %>/</a>
+    <% boards.forEach(b => { %>
+      <a class="genre-<%= b.slug %>" href="/<%= b.slug %>">/<%= b.slug %>/</a>
     <% }) %>
   <% } %>
 </div>
 
-<div class="post op" id="t<%= thread.id %>">
+<div class="header">
+  <img src="https://files.catbox.moe/n4puao.jpg" class="mascot">
+  <h1>/<a href="/<%= board %>"><%= board %></a>/</h1>
+</div>
 
-<form method="POST" action="/report/thread/<%= thread.id %>" class="report-form">
-  <input name="reason" maxlength="300" placeholder="report reason">
-  <button type="submit">report thread</button>
-</form>
+<div class="post op" id="t<%= thread.id %>">
 
   <div class="post-title">
     <% if (thread.pinned) { %>
@@ -46,14 +56,15 @@
   </div>
 
   <div class="post-meta">
-<% if (thread.author !== "anon") { %>
-  <b>
-    <a href="/u/<%= thread.author %>"><%= thread.author %></a>
-  </b>
-  <%- userBadge(thread.author_role) %>
-<% } else { %>
-  <b>anon</b>
-<% } %>
+    <% if (thread.author !== "anon") { %>
+      <b>
+        <a href="/u/<%= thread.author %>"><%= thread.author %></a>
+      </b>
+      <%- userBadge(thread.author_role) %>
+    <% } else { %>
+      <b>anon</b>
+    <% } %>
+
     |
     no.<%= thread.id %>
     |
@@ -76,6 +87,11 @@
     </div>
   <% } %>
 
+  <form method="POST" action="/report/thread/<%= thread.id %>" class="report-form">
+    <input name="reason" maxlength="300" placeholder="report reason">
+    <button type="submit">report thread</button>
+  </form>
+
 </div>
 
 <h2 class="section-title">replies</h2>
@@ -87,28 +103,15 @@
 <% replies.forEach(reply => { %>
   <div class="post" id="p<%= reply.id %>">
 
-<form method="POST" action="/report/reply/<%= reply.id %>" class="report-form">
-  <input name="reason" maxlength="300" placeholder="report reason">
-  <button type="submit">report reply</button>
-</form>
-
-
     <div class="post-meta">
-<% replies.forEach(reply => { %>
-
-  <div class="post">
-
-    <% if (reply.author !== "anon") { %>
-  <b>
-    <a href="/u/<%= reply.author %>"><%= reply.author %></a>
-  </b>
-  <%- userBadge(reply.author_role) %>
-<% } else { %>
-  <b>anon</b>
-<% } %>
-  </div>
-
-<% }) %>
+      <% if (reply.author !== "anon") { %>
+        <b>
+          <a href="/u/<%= reply.author %>"><%= reply.author %></a>
+        </b>
+        <%- userBadge(reply.author_role) %>
+      <% } else { %>
+        <b>anon</b>
+      <% } %>
 
       |
       no.<%= reply.id %>
@@ -132,8 +135,32 @@
       </div>
     <% } %>
 
+    <form method="POST" action="/report/reply/<%= reply.id %>" class="report-form">
+      <input name="reason" maxlength="300" placeholder="report reason">
+      <button type="submit">report reply</button>
+    </form>
+
   </div>
 <% }) %>
+
+<div class="post-form">
+  <h2>reply</h2>
+
+  <form method="POST" action="/<%= board %>/thread/<%= thread.id %>/reply" enctype="multipart/form-data">
+
+    <% if (!user) { %>
+      <input name="author" placeholder="name (optional)">
+    <% } %>
+
+    <textarea name="body" placeholder="reply"></textarea>
+
+    <input type="file" name="media" accept="image/*,audio/*">
+
+    <button type="submit">post reply</button>
+  </form>
+</div>
+
+<script src="/mobile.js"></script>
 
 </body>
 </html>
