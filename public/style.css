@@ -636,3 +636,38 @@ body::after {
     opacity: 0;
   }
 }
+
+#star-rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.falling-star {
+  position: absolute;
+  top: -50px;
+  color: #ff0000;
+  text-shadow:
+    0 0 4px #ff0000,
+    0 0 8px #ff0000;
+  animation: starfall linear infinite;
+  opacity: .8;
+}
+
+@keyframes starfall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: .8;
+  }
+
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
