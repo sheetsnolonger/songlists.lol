@@ -733,13 +733,16 @@ app.get("/:board", async (req, res) => {
   }
 
   const threads = await pool.query(`
-    SELECT threads.*, COUNT(replies.id) AS reply_count
-    FROM threads
-    LEFT JOIN replies ON replies.thread_id = threads.id
-    WHERE threads.board_slug = $1
-    GROUP BY threads.id
-    ORDER BY pinned DESC, id DESC
-  `, [req.params.board]);
+  SELECT threads.*, 
+         users.role AS current_author_role,
+         COUNT(replies.id) AS reply_count
+  FROM threads
+  LEFT JOIN replies ON replies.thread_id = threads.id
+  LEFT JOIN users ON users.username = threads.author
+  WHERE threads.board_slug = $1
+  GROUP BY threads.id, users.role
+  ORDER BY pinned DESC, id DESC
+`, [req.params.board]);
 
   res.render("board", {
     boards,
