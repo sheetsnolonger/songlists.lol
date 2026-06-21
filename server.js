@@ -521,6 +521,14 @@ app.post("/settings/profile", postLimiter, requireLogin, async (req, res) => {
   const avatarUrl = cleanText(req.body.avatar_url, 500);
   const customCss = String(req.body.custom_css || "").slice(0, 3000);
 
+  function isImageUrl(url) {
+    return /^https?:\/\/.+/i.test(url);
+  }
+
+  if (avatarUrl && !isImageUrl(avatarUrl)) {
+    return res.send("invalid image url");
+  }
+
   await pool.query(
     `UPDATE users
      SET bio = $1,
