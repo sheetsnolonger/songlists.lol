@@ -80,7 +80,11 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "https://files.catbox.moe", "data:"],
+      imgSrc: [
+  "'self'",
+  "https:",
+  "data:"
+],
       mediaSrc: ["'self'"],
       styleSrc: ["'self'"],
       scriptSrc: ["'self'"],
