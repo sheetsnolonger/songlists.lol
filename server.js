@@ -751,20 +751,27 @@ app.get("/:board", async (req, res) => {
 app.get("/:board/thread/:id", async (req, res) => {
   const boards = await getAllBoards();
 
-  const thread = await pool.query(
-    "SELECT * FROM threads WHERE id = $1 AND board_slug = $2",
-    [req.params.id, req.params.board]
-  );
-
+ const thread = await pool.query(
+  `SELECT threads.*, users.role AS current_author_role
+   FROM threads
+   LEFT JOIN users ON users.username = threads.author
+   WHERE threads.id = $1
+   AND threads.board_slug = $2`,
+  [req.params.id, req.params.board]
+);
+  
   if (!thread.rows.length) {
     return res.status(404).render("404", { boards });
   }
 
   const replies = await pool.query(
-    "SELECT * FROM replies WHERE thread_id = $1 ORDER BY id ASC",
-    [req.params.id]
-  );
-
+  `SELECT replies.*, users.role AS current_author_role
+   FROM replies
+   LEFT JOIN users ON users.username = replies.author
+   WHERE replies.thread_id = $1
+   ORDER BY replies.id ASC`,
+  [req.params.id]
+);
   res.render("thread", {
     boards,
     board: req.params.board,
