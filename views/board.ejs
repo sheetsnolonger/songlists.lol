@@ -77,7 +77,7 @@
   <b>
     <a href="/u/<%= thread.author %>"><%= thread.author %></a>
   </b>
-  <%- userBadge(thread.author_role) %>
+  <%- userBadge(thread.current_author_role || thread.author_role) %>
 <% } else { %>
   <b>anon</b>
 <% } %>
