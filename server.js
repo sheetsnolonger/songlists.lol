@@ -186,9 +186,19 @@ function escapeHtml(text) {
 function formatBody(text) {
   const escaped = escapeHtml(text);
 
-  function userBadge(username, role) {
-  if (role === "admin") return `<span class="badge admin-badge">admin</span>`;
-  if (role === "mod") return `<span class="badge mod-badge">mod</span>`;
+function userBadge(role) {
+  if (role === "owner") {
+    return `<span class="badge owner-badge">owner</span>`;
+  }
+
+  if (role === "admin") {
+    return `<span class="badge admin-badge">admin</span>`;
+  }
+
+  if (role === "mod") {
+    return `<span class="badge mod-badge">mod</span>`;
+  }
+
   return "";
 }
 
