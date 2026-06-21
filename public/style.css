@@ -598,3 +598,10 @@ button:hover {
   border: 1px solid #ff9900;
   padding: 1px 5px;
 }
+
+.owner-badge {
+  color: #ff66ff;
+  border: 1px solid #ff66ff;
+  padding: 1px 5px;
+  font-weight: bold;
+}
