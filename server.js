@@ -399,10 +399,15 @@ app.get("/", async (req, res) => {
     LIMIT 30
   `);
 
-  res.render("index", {
-    boards,
-    recent: recent.rows
-  });
+const artists = await pool.query(
+  "SELECT * FROM artists ORDER BY id DESC LIMIT 12"
+);
+
+res.render("index", {
+  boards,
+  recentThreads,
+  stats,
+  artists: artists.rows
 });
 
 
