@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>admin artists - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/secret-admin">admin home</a> ]
+  [ <a href="/artists">artists</a> ]
+  [ <a href="/">site home</a> ]
+</div>
+
+<div class="header">
+  <h1>admin artists</h1>
+</div>
+
+<div class="post-form">
+  <h2>create artist</h2>
+
+  <form method="POST" action="/admin/artists/create">
+    <input name="slug" placeholder="slug, example: feb">
+    <input name="name" placeholder="artist name">
+    <input name="avatar_url" placeholder="avatar image url">
+    <input name="banner_url" placeholder="banner image url">
+    <textarea name="bio" placeholder="artist bio"></textarea>
+    <input name="bandcamp_url" placeholder="bandcamp url">
+    <input name="soundcloud_url" placeholder="soundcloud url">
+    <input name="youtube_url" placeholder="youtube url">
+    <button>create artist</button>
+  </form>
+</div>
+
+<h2 class="section-title">artists</h2>
+
+<% if (artists.length === 0) { %>
+  <div class="post">no artists yet.</div>
+<% } %>
+
+<% artists.forEach(artist => { %>
+  <div class="post">
+    <div class="post-title">
+      <a href="/artist/<%= artist.slug %>"><%= artist.name %></a>
+    </div>
+
+    <div class="post-meta">
+      /artist/<%= artist.slug %>/
+    </div>
+
+    <form method="GET" action="/admin/artists/<%= artist.id %>/edit" style="display:inline;">
+      <button>edit</button>
+    </form>
+
+    <form
+      method="POST"
+      action="/admin/artists/<%= artist.id %>/delete"
+      style="display:inline;"
+      onsubmit="return confirm('delete this artist page?');"
+    >
+      <button>delete</button>
+    </form>
+  </div>
+<% }) %>
+
+</body>
+</html>
