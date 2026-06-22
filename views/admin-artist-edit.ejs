@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>edit artist - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/admin/artists">admin artists</a> ]
+  [ <a href="/artist/<%= artist.slug %>">view artist</a> ]
+  [ <a href="/">site home</a> ]
+</div>
+
+<div class="header">
+  <h1>edit artist</h1>
+</div>
+
+<div class="post-form">
+  <form method="POST" action="/admin/artists/<%= artist.id %>/edit">
+    <input name="slug" value="<%= artist.slug || '' %>" placeholder="slug">
+    <input name="name" value="<%= artist.name || '' %>" placeholder="artist name">
+    <input name="avatar_url" value="<%= artist.avatar_url || '' %>" placeholder="avatar image url">
+    <input name="banner_url" value="<%= artist.banner_url || '' %>" placeholder="banner image url">
+
+    <textarea name="bio" placeholder="artist bio"><%= artist.bio || '' %></textarea>
+
+    <input name="bandcamp_url" value="<%= artist.bandcamp_url || '' %>" placeholder="bandcamp url">
+    <input name="soundcloud_url" value="<%= artist.soundcloud_url || '' %>" placeholder="soundcloud url">
+    <input name="youtube_url" value="<%= artist.youtube_url || '' %>" placeholder="youtube url">
+
+    <button>save artist</button>
+  </form>
+</div>
+
+</body>
+</html>
