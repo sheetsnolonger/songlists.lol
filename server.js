@@ -795,12 +795,19 @@ app.post("/admin/artists/create", requireAdmin, postLimiter, async (req, res) =>
   }
 
   await pool.query(
-    `INSERT INTO artists
-     (slug, name, avatar_url, banner_url, bio, bandcamp_url, soundcloud_url, spotify_url)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, spotifyUrl]
-  );
-
+  `INSERT INTO artists
+   (slug, name, avatar_url, bio, bandcamp_url, soundcloud_url, spotify_url)
+   VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+  [
+    slug,
+    name,
+    avatarUrl,
+    bio,
+    bandcampUrl,
+    soundcloudUrl,
+    spotifyUrl
+  ]
+);
   res.redirect("/admin/artists");
 });
 
@@ -837,19 +844,27 @@ app.post("/admin/artists/:id/edit", requireAdmin, postLimiter, async (req, res) 
   }
 
   await pool.query(
-    `UPDATE artists
-     SET slug = $1,
-         name = $2,
-         avatar_url = $3,
-         banner_url = $4,
-         bio = $5,
-         bandcamp_url = $6,
-         soundcloud_url = $7,
-         spotify_url = $7
-     WHERE id = $9`,
-    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, spotifyUrl, req.params.id]
-  );
-
+  `UPDATE artists
+   SET slug = $1,
+       name = $2,
+       avatar_url = $3,
+       bio = $4,
+       bandcamp_url = $5,
+       soundcloud_url = $6,
+       spotify_url = $7
+   WHERE id = $8`,
+  [
+    slug,
+    name,
+    avatarUrl,
+    bio,
+    bandcampUrl,
+    soundcloudUrl,
+    spotifyUrl,
+    req.params.id
+  ]
+);
+  
   res.redirect("/admin/artists");
 });
 
