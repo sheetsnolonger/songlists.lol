@@ -20,8 +20,7 @@
   <form method="POST" action="/admin/artists/<%= artist.id %>/edit">
     <input name="slug" value="<%= artist.slug || '' %>" placeholder="slug">
     <input name="name" value="<%= artist.name || '' %>" placeholder="artist name">
-    <input name="avatar_url" value="<%= artist.avatar_url || '' %>" placeholder="avatar image url">
-    <input name="banner_url" value="<%= artist.banner_url || '' %>" placeholder="banner image url">
+    <input name="avatar_url" value="<%= artist.avatar_url || '' %>" placeholder="avatar image url"> 
 
     <textarea name="bio" placeholder="artist bio"><%= artist.bio || '' %></textarea>
 
