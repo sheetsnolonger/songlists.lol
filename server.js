@@ -392,24 +392,20 @@ async function getAllBoards() {
 app.get("/", async (req, res) => {
   const boards = await getAllBoards();
 
-  const recent = await pool.query(`
-    SELECT *
-    FROM threads
-    ORDER BY pinned DESC, id DESC
-    LIMIT 30
-  `);
+  const recent = await pool.query(
+    "SELECT * FROM threads ORDER BY id DESC LIMIT 20"
+  );
 
-const artists = await pool.query(
-  "SELECT * FROM artists ORDER BY id DESC LIMIT 12"
-);
-  
-res.render("index", {
-  boards,
-  recentThreads: recent.rows,
-  artists: artists.rows
-});
-});
+  const artists = await pool.query(
+    "SELECT * FROM artists ORDER BY id DESC LIMIT 12"
+  );
 
+  res.render("index", {
+    boards,
+    recentThreads: recent.rows,
+    artists: artists.rows
+  });
+});
 
 app.get("/signup", (req, res) => {
   res.render("signup", { error: null });
