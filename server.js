@@ -402,11 +402,10 @@ app.get("/", async (req, res) => {
 const artists = await pool.query(
   "SELECT * FROM artists ORDER BY id DESC LIMIT 12"
 );
-
+  
 res.render("index", {
   boards,
-  recentThreads,
-  stats,
+  recentThreads: recent.rows,
   artists: artists.rows
 });
 });
