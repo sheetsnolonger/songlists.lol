@@ -409,7 +409,7 @@ res.render("index", {
   stats,
   artists: artists.rows
 });
-
+});
 
 
 app.get("/signup", (req, res) => {
