@@ -798,7 +798,7 @@ app.post("/admin/artists/create", requireAdmin, postLimiter, async (req, res) =>
     `INSERT INTO artists
      (slug, name, avatar_url, banner_url, bio, bandcamp_url, soundcloud_url, youtube_url)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, spotify_url]
+    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, spotifyUrl]
   );
 
   res.redirect("/admin/artists");
@@ -847,7 +847,7 @@ app.post("/admin/artists/:id/edit", requireAdmin, postLimiter, async (req, res) 
          soundcloud_url = $7,
          youtube_url = $8
      WHERE id = $9`,
-    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, spotify_url, req.params.id]
+    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, spotifyUrl, req.params.id]
   );
 
   res.redirect("/admin/artists");
