@@ -400,11 +400,11 @@ app.get("/", async (req, res) => {
     "SELECT * FROM artists ORDER BY id DESC LIMIT 12"
   );
 
-  res.render("index", {
-    boards,
-    recentThreads: recent.rows,
-    artists: artists.rows
-  });
+res.render("index", {
+  boards,
+  recent: recent.rows,
+  artists: artists.rows
+});
 });
 
 app.get("/signup", (req, res) => {
