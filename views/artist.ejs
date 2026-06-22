@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= artist.name %> - songlists.lol</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="top-nav">
+  [ <a href="/">home</a> ]
+  [ <a href="/artists">artists</a> ]
+  [ <a href="/catalog">catalog</a> ]
+</div>
+
+<div class="profile-box">
+  <% if (artist.banner_url) { %>
+    <img src="<%= artist.banner_url %>" style="width:100%; max-height:180px; object-fit:cover;">
+  <% } %>
+
+  <% if (artist.avatar_url) { %>
+    <img class="profile-avatar" src="<%= artist.avatar_url %>">
+  <% } %>
+
+  <h1><%= artist.name %></h1>
+
+  <div class="profile-bio">
+    <%= artist.bio || "no bio yet." %>
+  </div>
+
+  <p>
+    <% if (artist.bandcamp_url) { %>
+      [ <a href="<%= artist.bandcamp_url %>" target="_blank">bandcamp</a> ]
+    <% } %>
+
+    <% if (artist.soundcloud_url) { %>
+      [ <a href="<%= artist.soundcloud_url %>" target="_blank">soundcloud</a> ]
+    <% } %>
+
+    <% if (artist.youtube_url) { %>
+      [ <a href="<%= artist.youtube_url %>" target="_blank">youtube</a> ]
+    <% } %>
+  </p>
+</div>
+
+</body>
+</html>
