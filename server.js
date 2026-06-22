@@ -277,7 +277,20 @@ async function initDb() {
       reason TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    
+
+    CREATE TABLE IF NOT EXISTS artists (
+  id SERIAL PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  avatar_url TEXT,
+  banner_url TEXT,
+  bio TEXT,
+  bandcamp_url TEXT,
+  soundcloud_url TEXT,
+  youtube_url TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
     ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_css TEXT DEFAULT '';
     
@@ -718,6 +731,135 @@ app.get("/admin/reports", requireAdmin, async (req, res) => {
   res.render("admin-reports", {
     reports: reports.rows
   });
+});
+
+app.get("/artists", async (req, res) => {
+  const boards = await getAllBoards();
+
+  const artists = await pool.query(
+    "SELECT * FROM artists ORDER BY name ASC"
+  );
+
+  res.render("artists", {
+    boards,
+    artists: artists.rows
+  });
+});
+
+app.get("/artist/:slug", async (req, res) => {
+  const boards = await getAllBoards();
+
+  const artist = await pool.query(
+    "SELECT * FROM artists WHERE slug = $1",
+    [req.params.slug]
+  );
+
+  if (!artist.rows.length) {
+    return res.status(404).render("404", { boards });
+  }
+
+  res.render("artist", {
+    boards,
+    artist: artist.rows[0]
+  });
+});
+
+
+app.get("/admin/artists", requireAdmin, async (req, res) => {
+  const boards = await getAllBoards();
+
+  const artists = await pool.query(`
+    SELECT *
+    FROM artists
+    ORDER BY name ASC
+  `);
+
+  res.render("admin-artists", {
+    boards,
+    artists: artists.rows
+  });
+});
+
+app.post("/admin/artists/create", requireAdmin, postLimiter, async (req, res) => {
+  const slug = cleanText(req.body.slug, 60).toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  const name = cleanText(req.body.name, 120);
+  const avatarUrl = cleanText(req.body.avatar_url, 500);
+  const bannerUrl = cleanText(req.body.banner_url, 500);
+  const bio = cleanText(req.body.bio, 2000);
+  const bandcampUrl = cleanText(req.body.bandcamp_url, 500);
+  const soundcloudUrl = cleanText(req.body.soundcloud_url, 500);
+  const youtubeUrl = cleanText(req.body.youtube_url, 500);
+
+  if (!slug || !name) {
+    return res.status(400).send("artist slug and name required");
+  }
+
+  await pool.query(
+    `INSERT INTO artists
+     (slug, name, avatar_url, banner_url, bio, bandcamp_url, soundcloud_url, youtube_url)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, youtubeUrl]
+  );
+
+  res.redirect("/admin/artists");
+});
+
+app.get("/admin/artists/:id/edit", requireAdmin, async (req, res) => {
+  const boards = await getAllBoards();
+
+  const artist = await pool.query(
+    "SELECT * FROM artists WHERE id = $1",
+    [req.params.id]
+  );
+
+  if (!artist.rows.length) {
+    return res.status(404).render("404", { boards });
+  }
+
+  res.render("admin-artist-edit", {
+    boards,
+    artist: artist.rows[0]
+  });
+});
+
+app.post("/admin/artists/:id/edit", requireAdmin, postLimiter, async (req, res) => {
+  const slug = cleanText(req.body.slug, 60).toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  const name = cleanText(req.body.name, 120);
+  const avatarUrl = cleanText(req.body.avatar_url, 500);
+  const bannerUrl = cleanText(req.body.banner_url, 500);
+  const bio = cleanText(req.body.bio, 2000);
+  const bandcampUrl = cleanText(req.body.bandcamp_url, 500);
+  const soundcloudUrl = cleanText(req.body.soundcloud_url, 500);
+  const youtubeUrl = cleanText(req.body.youtube_url, 500);
+
+  if (!slug || !name) {
+    return res.status(400).send("artist slug and name required");
+  }
+
+  await pool.query(
+    `UPDATE artists
+     SET slug = $1,
+         name = $2,
+         avatar_url = $3,
+         banner_url = $4,
+         bio = $5,
+         bandcamp_url = $6,
+         soundcloud_url = $7,
+         youtube_url = $8
+     WHERE id = $9`,
+    [slug, name, avatarUrl, bannerUrl, bio, bandcampUrl, soundcloudUrl, youtubeUrl, req.params.id]
+  );
+
+  res.redirect("/admin/artists");
+});
+
+app.post("/admin/artists/:id/delete", requireAdmin, postLimiter, async (req, res) => {
+  await pool.query(
+    "DELETE FROM artists WHERE id = $1",
+    [req.params.id]
+  );
+
+  res.redirect("/admin/artists");
 });
 
 app.get("/:board", async (req, res) => {
